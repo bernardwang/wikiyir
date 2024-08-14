@@ -25,11 +25,18 @@ a,
   body {
     display: flex;
     place-items: center;
+    flex-flow: column;
+  }
+
+  body > video {
+    width: 100%;
+    margin-bottom: 10px;
   }
 
   #app {
     display: grid;
     grid-template-columns: 1fr 1fr;
     padding: 0 2rem;
+    row-gap: 20px;
   }
 }

@@ -72,7 +72,7 @@ main {
 @media (min-width: 1024px) {
   header {
     display: flex;
-    place-items: center;
+    place-items: start;
     padding-right: calc(var(--section-gap) / 2);
   }
 
