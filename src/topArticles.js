@@ -61,6 +61,7 @@ async function getMonthlyTopArticles(
           a.url = `${host}/wiki/${encodedTitle}`
           return a
         })
+        .slice(0, 5)
       return articles
     } else {
       // eslint-disable-next-line no-console
@@ -74,7 +75,7 @@ async function getMonthlyTopArticles(
   }
 }
 
-async function hydrateArticleList(articles, year) {
+async function hydrateArticles(articles, year) {
   const categories = catFn(year)
     .map((a) => encodeURIComponent(a.title))
     .join('|')
@@ -96,9 +97,7 @@ async function hydrateArticleList(articles, year) {
 }
 
 async function hydrate(articlesByMonth, year) {
-  const all = await Promise.all(
-    articlesByMonth.map((articles) => hydrateArticleList(articles, year))
-  )
+  const all = await Promise.all(articlesByMonth.map((articles) => hydrateArticles(articles, year)))
   return all
 }
 
@@ -111,7 +110,7 @@ async function hydrate(articlesByMonth, year) {
  * @param {number} [options.limit]
  * @return {array}
  */
-async function querymonthlyTopArticles(options) {
+async function queryMonthlyTopArticles(options) {
   const { project = 'en.wikipedia', limit = 15, year = '2024' } = options
   const currentDate = new Date()
   const totalMonths = year == currentDate.getFullYear() ? currentDate.getMonth() : 12
@@ -148,23 +147,28 @@ function getYearlyTopArticles(monthlyTopArticles) {
   return yearlyTopArticles
 }
 
-function categorizeTopArticles(topArticles, year) {
-  const byCategory = {}
+function categorizeArticles(topArticles, year) {
+  const byCategory = []
   catFn(year).forEach((categoryObj) => {
     const category = categoryObj.title
-    byCategory[category] = topArticles.filter(
-      (a) => a.categories.includes(category) || a.categories.includes(category.replace(/_/g, ' '))
+    byCategory.push(
+      topArticles.filter(
+        (a) => a.categories.includes(category) || a.categories.includes(category.replace(/_/g, ' '))
+      )
     )
   })
   return byCategory
 }
 
 async function getTopArticles(options) {
-  const monthlyTopArticles = await querymonthlyTopArticles(options)
+  const monthlyTopArticles = await queryMonthlyTopArticles(options)
   const yearlyTopArticles = getYearlyTopArticles(monthlyTopArticles)
+  const categorizedYearlyTopArticles = categorizeArticles(yearlyTopArticles, options.year)
+
   return {
     monthlyTopArticles,
-    yearlyTopArticles
+    yearlyTopArticles,
+    categorizedYearlyTopArticles
   }
 }
-export { getTopArticles, hydrateArticleList }
+export { getTopArticles }

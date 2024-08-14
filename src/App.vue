@@ -1,10 +1,9 @@
 <script setup>
 import { ref } from 'vue'
-import { CdxTextInput, CdxButton, CdxIcon, CdxSelect } from '@wikimedia/codex'
+import { CdxLabel, CdxTextInput, CdxButton, CdxIcon, CdxSelect } from '@wikimedia/codex'
 import { cdxIconArrowNext } from '@wikimedia/codex-icons'
-import { getTopArticles, hydrateArticleList } from './topArticles.js'
+import { getTopArticles } from './topArticles.js'
 import JigsawCard from './components/JigsawCard.vue'
-import catFn from './categories.js'
 
 const project = ref('en.wikipedia')
 const year = ref('2024')
@@ -43,25 +42,14 @@ const months = [
 
 async function fetchArticles() {
   articleData.value = await getTopArticles({ project: project.value, limit: 10, year: year.value })
-  console.log(articleData.value)
 }
 
 const getCards = () => {
-  const cards = []
-  console.log(articleData.value.monthlyTopArticles)
-  articleData.value.monthlyTopArticles.forEach((articles) => {
-    if (category.value) {
-      const catTitle = catFn(year.value)[category.value].title
-      const filteredArticles = articles.filter(
-        (a) => a.categories.includes(catTitle) || a.categories.includes(catTitle.replace(/_/g, ' '))
-      )
-      cards.push(filteredArticles[0])
-    } else {
-      cards.push(articles[0])
-    }
-  })
-  console.log(cards)
-  return cards
+  if (category.value) {
+    return articleData.value.categorizedYearlyTopArticles[category.value]
+  } else {
+    return articleData.value.yearlyTopArticles
+  }
 }
 </script>
 
@@ -78,39 +66,49 @@ const getCards = () => {
 
   <main>
     <div class="wrapper">
-      <label>Your Wikipedia: </label>
-      <cdx-text-input
-        required
-        pattern="[^\.]*\.(wikivoyage|wikinews|wikiversity|wikibooks|wikiquote|wiktionary|wikifunctions|wikisource|wikipedia|mediawiki|wikidata|wikimedia)"
-        type="text"
-        v-model="project"
-      ></cdx-text-input>
-      <cdx-select
-        v-model:selected="year"
-        :menu-items="yearItems"
-        default-label="Choose an option"
-      />
-      <cdx-button @click="fetchArticles" action="progressive" weight="primary">
+      <div>
+        <cdx-label input-id="wiki-input"> Your wiki: </cdx-label>
+        <cdx-text-input
+          required
+          pattern="[^\.]*\.(wikivoyage|wikinews|wikiversity|wikibooks|wikiquote|wiktionary|wikifunctions|wikisource|wikipedia|mediawiki|wikidata|wikimedia)"
+          type="text"
+          v-model="project"
+          id="wiki-input"
+          class="wiki-input"
+        ></cdx-text-input>
+        <cdx-select
+          v-model:selected="year"
+          :menu-items="yearItems"
+          default-label="Choose an option"
+          class="year-select"
+        />
+      </div>
+      <cdx-button class="submit-btn" @click="fetchArticles" action="progressive" weight="primary">
         <cdx-icon class="nextIcon" :icon="cdxIconArrowNext"></cdx-icon>
-        <span>Get top articles</span>
+        <span>Get Year in Review</span>
       </cdx-button>
-      <cdx-select
-        v-if="articleData"
-        v-model:selected="category"
-        :menu-items="categoryItems"
-        @change="updateCards"
-        default-label="Filter"
-      />
     </div>
-    <div class="ribbon" v-if="articleData">
-      <jigsaw-card
-        v-for="(card, i) in getCards()"
-        :image="card.image"
-        :piece="i % 2"
-        :link="card.url"
-        :month="months[i]"
-      ></jigsaw-card>
-    </div>
+    <section v-if="articleData">
+      <h2>Top Articles in {{ year }}</h2>
+      <div>
+        <cdx-label input-id="filter-input"> Filter categories </cdx-label>
+        <cdx-select
+          v-model:selected="category"
+          :menu-items="categoryItems"
+          @change="updateCards"
+          default-label="Filter"
+          id="filter-select"
+        />
+      </div>
+      <div class="ribbon">
+        <jigsaw-card
+          v-for="(card, i) in getCards()"
+          :image="card.image"
+          :piece="i % 2"
+          :link="card.url"
+        ></jigsaw-card>
+      </div>
+    </section>
   </main>
 </template>
 
@@ -118,6 +116,9 @@ const getCards = () => {
 header {
   width: 100%;
   background-color: #e679a6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .logo {
@@ -127,5 +128,9 @@ header {
   display: flex;
   overflow-x: scroll;
   max-width: 100vw;
+}
+
+.wiki-input {
+  max-width: 256px;
 }
 </style>

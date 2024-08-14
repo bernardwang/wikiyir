@@ -11,13 +11,8 @@ const props = defineProps({
   link: {
     type: String,
     required: true
-  },
-  month: {
-    type: String,
-    required: true
   }
 })
-console.log(props.month)
 </script>
 
 <template>
@@ -25,7 +20,6 @@ console.log(props.month)
     <a :href="link">
       <img :src="image" />
     </a>
-    <span>{{ month }}</span>
   </div>
 </template>
 
