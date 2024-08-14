@@ -1,6 +1,23 @@
 const CATEGORIES = [
 	'Category:2024_deaths'
 ];
+
+const filterOut = ( item ) => ![ 'Special:Search',
+    'Taylor_Swift',
+    'Indian_Premier_League',
+    'Porno_y_helado',
+    'WrestleMania_XL',
+    'Facebook',
+    'Jeffrey_Epstein',
+    'Saltburn_(film)',
+    'Griselda_Blanco',
+    '2024_Indian_Premier_League',
+    'Deaths_in_2024',
+    'YouTube', 'Main_Page', 'Cleopatra', 'Pornhub', 'XXXTentacion', '.xxx',
+    'Juneteenth', 'Indian_Premier_League',
+].includes( item.article.replace( / /g, '_' ) )
+&& !item.article.includes('List_of');
+
 // Retrieve the top Wikipedia articles using the Wikimedia API.
 async function getMonthlyTopArticles( project, limit = 1, year = '2023', month = '01', mainNSOnly = true, excludeMainPage = true ) {
 	const endpoint = `https://wikimedia.org/api/rest_v1/metrics/pageviews/top/${project}/all-access/${year}/${month}/all-days`;
@@ -13,6 +30,7 @@ async function getMonthlyTopArticles( project, limit = 1, year = '2023', month =
 			const articles = data.items[0].articles
 				.filter( ( a ) => mainNSOnly ? a.article.indexOf( ':' ) === -1 : true )
 				.filter( ( a ) => excludeMainPage ? a.article != 'Main_Page' : true )
+				.filter( filterOut )
 				.slice( 0, limit )
 				.map( ( a ) => ( { ...a, ...{
 					project,
