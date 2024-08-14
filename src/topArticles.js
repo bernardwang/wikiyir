@@ -1,3 +1,6 @@
+const CATEGORIES = [
+	'Category:2024_deaths'
+];
 // Retrieve the top Wikipedia articles using the Wikimedia API.
 async function getMonthlyTopArticles( project, limit = 1, year = '2023', month = '01', mainNSOnly = true, excludeMainPage = true ) {
 	const endpoint = `https://wikimedia.org/api/rest_v1/metrics/pageviews/top/${project}/all-access/${year}/${month}/all-days`;
@@ -36,9 +39,7 @@ async function getMonthlyTopArticles( project, limit = 1, year = '2023', month =
 }
 
 async function hydrateArticleList( articles ) {
-	const categories = [
-		'Category:2024_deaths'
-	].map( ( a ) => encodeURIComponent( a ) ).join('|');
+	const categories = CATEGORIES.map( ( a ) => encodeURIComponent( a ) ).join('|');
 	const titles = articles.map( ( article ) => encodeURIComponent( article.article ) ).join( '|' );
 	const json = await fetch( `https://en.wikipedia.org/w/api.php?pithumbsize=400&pilimit=max&origin=*&action=query&format=json&prop=pageimages%7Ccategories&titles=${titles}&formatversion=2&clprop=&clshow=!hidden&clcategories=${categories}` )
 		.then((r) => r.json());
@@ -47,7 +48,7 @@ async function hydrateArticleList( articles ) {
 		const dbkey = page.title.replace( / /g, '_' );
 		lookup[dbkey] = {
 			image: page.thumbnail ? page.thumbnail.source : null,
-			categories: page.categories
+			categories: ( page.categories || [] ).map( (c) => c.title )
 		}
 	});
 	return articles.map( ( article ) => Object.assign( {}, article, lookup[article.article.replace( / /g, '_' )] ) ).filter((article) => !!article.image);
@@ -104,12 +105,23 @@ function getYearlyTopArticles( monthlyTopArticles ) {
 	return yearlyTopArticles;
 }
 
+function categorizeTopArticles( monthlyTopArticles ) {
+	const flatList = monthlyTopArticles.flat(1);
+	console.log(flatList);
+	const byCategory = {};
+	CATEGORIES.forEach(( category ) => {
+		byCategory[ category ] = flatList.filter((a) => a.categories.includes(category) || a.categories.includes(category.replace(/_/g, ' ')))
+	} );
+	return byCategory;
+}
+
 async function getTopArticles( options ) {
 	const monthlyTopArticles = await querymonthlyTopArticles( options );
 	const yearlyTopArticles = getYearlyTopArticles( monthlyTopArticles );
 	return {
 		monthlyTopArticles,
-		yearlyTopArticles
+		yearlyTopArticles,
+		byCategory: categorizeTopArticles( monthlyTopArticles )
 	};
 }
 export default getTopArticles;
