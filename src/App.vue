@@ -8,7 +8,8 @@ import JigsawCard from './components/JigsawCard.vue';
 
 const project = ref('en.wikipedia');
 const year = ref('2024');
-const cards = ref([]);
+const cards = ref({});
+const category = ref('');
 
 const yearItems = [
 	{ label: '2024', value: '2024' },
@@ -18,9 +19,21 @@ const yearItems = [
 	{ label: '2020', value: '2020' },
 ];
 
+const categoryItems = [
+	{ label: 'All', value: '' },
+	{ label: 'Passings', value: 'Category:2024_deaths' }
+];
+
 async function fetchArticles() {
   cards.value = await queryTopArticles({ project: project.value, limit: 10, year: year.value });
-  console.log(cards.value);
+}
+
+const getCards = () => {
+  if ( category.value && cards.value.byCategory ) {
+    return cards.value.byCategory[category.value];
+  } else {
+    return cards.value.yearlyTopArticles;
+  }
 }
 </script>
 
@@ -35,16 +48,22 @@ async function fetchArticles() {
 	    	:menu-items="yearItems"
 	    	default-label="Choose an option"
 	    />
-      <cdx-button @click="fetchArticles" action="progressive" weight="primary">
+      <cdx-button v-if="!cards.byCategory" @click="fetchArticles" action="progressive" weight="primary">
 			  <cdx-icon class="nextIcon" :icon="cdxIconArrowNext"></cdx-icon>
 			  <span>Get top articles</span>
 		  </cdx-button>
+      <cdx-select
+        v-if="cards && cards.byCategory"
+        v-model:selected="category"
+        :menu-items="categoryItems"
+        @change="updateCards"
+        default-label="Filter" />
     </div>
   </header>
 
   <main>
     <div class="ribbon">
-      <jigsaw-card v-for="(card, i) in cards.yearlyTopArticles"
+      <jigsaw-card v-for="(card, i) in getCards()"
         :image="card.image"
         :piece="i % 2"
         :link="card.url"></jigsaw-card>
