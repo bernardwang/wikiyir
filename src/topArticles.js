@@ -1,5 +1,7 @@
 const CATEGORIES = [
-	'Category:2024_deaths'
+	'Category:2024_deaths',
+	'Category:2024_films',
+	'Category:2024_in_science'
 ];
 
 const filterOut = ( item ) => ![ 'Special:Search',
@@ -87,7 +89,7 @@ async function hydrate( articlesByMonth ) {
  * @return {array}
  */
 async function querymonthlyTopArticles( options ) {
-	const { project = 'en.wikipedia', limit = 10, year = '2024' } = options;
+	const { project = 'en.wikipedia', limit = 15, year = '2024' } = options;
 	const currentDate = new Date();
 	const totalMonths = year == currentDate.getFullYear() ? currentDate.getMonth() : 12;
 

@@ -21,11 +21,14 @@ const yearItems = [
 
 const categoryItems = [
 	{ label: 'All', value: '' },
-	{ label: 'Passings', value: 'Category:2024_deaths' }
+  { label: 'Movies', value: 'Category:2024_films' },
+	{ label: 'Passings', value: 'Category:2024_deaths' },
+  { label: 'Science', value: 'Category:2024_in_science' }
 ];
 
 async function fetchArticles() {
   cards.value = await queryTopArticles({ project: project.value, limit: 10, year: year.value });
+  console.log(cards.value)
 }
 
 const getCards = () => {
