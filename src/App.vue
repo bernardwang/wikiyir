@@ -4,9 +4,12 @@ import { ref } from 'vue'
 import { CdxTextInput, CdxButton, CdxIcon, CdxSelect } from '@wikimedia/codex';
 import { cdxIconArrowNext } from '@wikimedia/codex-icons';
 import queryTopArticles from './topArticles.js';
+import JigsawCard from './components/JigsawCard.vue';
 
 const project = ref('en.wikipedia');
 const year = ref('2024');
+const cards = ref([]);
+
 const yearItems = [
 	{ label: '2024', value: '2024' },
 	{ label: '2023', value: '2023' },
@@ -16,7 +19,8 @@ const yearItems = [
 ];
 
 async function fetchArticles() {
-  console.log( await queryTopArticles({ project: project.value, limit: 10, year: year.value }) );
+  cards.value = await queryTopArticles({ project: project.value, limit: 10, year: year.value });
+  console.log(cards.value);
 }
 </script>
 
@@ -39,6 +43,12 @@ async function fetchArticles() {
   </header>
 
   <main>
+    <div class="ribbon">
+      <jigsaw-card v-for="(card, i) in cards.yearlyTopArticles"
+        :image="card.image"
+        :piece="i % 2"
+        :link="card.url"></jigsaw-card>
+    </div>
   </main>
 </template>
 
@@ -51,7 +61,14 @@ header {
   display: block;
   margin: 0 auto 2rem;
 }
-
+.ribbon {
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+}
+main {
+  grid-area: 1 / 3;
+}
 @media (min-width: 1024px) {
   header {
     display: flex;

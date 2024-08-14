@@ -35,6 +35,29 @@ async function getMonthlyTopArticles( project, limit = 1, year = '2023', month =
 	}
 }
 
+async function hydrateArticleList( articles ) {
+	const categories = [
+		'Category:2024_deaths'
+	].map( ( a ) => encodeURIComponent( a ) ).join('|');
+	const titles = articles.map( ( article ) => encodeURIComponent( article.article ) ).join( '|' );
+	const json = await fetch( `https://en.wikipedia.org/w/api.php?pithumbsize=400&pilimit=max&origin=*&action=query&format=json&prop=pageimages%7Ccategories&titles=${titles}&formatversion=2&clprop=&clshow=!hidden&clcategories=${categories}` )
+		.then((r) => r.json());
+	const lookup = {};
+	json.query.pages.forEach((page) => {
+		const dbkey = page.title.replace( / /g, '_' );
+		lookup[dbkey] = {
+			image: page.thumbnail ? page.thumbnail.source : null,
+			categories: page.categories
+		}
+	});
+	return articles.map( ( article ) => Object.assign( {}, article, lookup[article.article.replace( / /g, '_' )] ) ).filter((article) => !!article.image);
+}
+
+async function hydrate( articlesByMonth ) {
+	const all = await Promise.all( articlesByMonth.map( (articles) => hydrateArticleList( articles ) ) );
+	return all;
+}
+
 // Creates test cases based on the top Wikipedia articles obtained from getMonthlyTopArticles.
 /**
  * @param {Object} options
@@ -60,7 +83,8 @@ async function querymonthlyTopArticles( options ) {
 		console.error( 'Failed to fetch.' );
 		return null;
 	}
-	return topArticles
+
+	return hydrate( topArticles );
 }
 
 function getYearlyTopArticles( monthlyTopArticles ) {
