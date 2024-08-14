@@ -1,4 +1,5 @@
 import catFn from './categories.js'
+import { MONTHS } from './chartUtils.js'
 
 const filterOut = (item) =>
   ![
@@ -61,7 +62,6 @@ async function getMonthlyTopArticles(
           a.url = `${host}/wiki/${encodedTitle}`
           return a
         })
-        .slice(0, 5)
       return articles
     } else {
       // eslint-disable-next-line no-console
@@ -134,13 +134,16 @@ function getYearlyTopArticles(monthlyTopArticles) {
   const aggregateArticles = {}
   monthlyTopArticles.flat(1).forEach((a) => {
     if (aggregateArticles[a.article]) {
-      aggregateArticles[a.article].views += a.views
+      aggregateArticles[a.article].views = Math.max(aggregateArticles[a.article].views, a.views)
+      aggregateArticles[a.article].chart.push({ x: MONTHS[Number(a.month)], y: a.views })
     } else {
       aggregateArticles[a.article] = a
+      aggregateArticles[a.article].chart = [{ x: MONTHS[Number(a.month)], y: a.views }]
       delete aggregateArticles[a.article].month
       delete aggregateArticles[a.article].rank
     }
   })
+  console.log(aggregateArticles)
   const yearlyTopArticles = Object.values(aggregateArticles).sort((a, b) => {
     return b.views - a.views
   })

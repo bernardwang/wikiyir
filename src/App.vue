@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { CdxLabel, CdxTextInput, CdxButton, CdxIcon, CdxSelect } from '@wikimedia/codex'
 import { cdxIconArrowNext } from '@wikimedia/codex-icons'
 import { getTopArticles } from './topArticles.js'
+import Chart from './components/Chart.vue'
 import JigsawCard from './components/JigsawCard.vue'
 
 const project = ref('en.wikipedia')
@@ -23,21 +24,6 @@ const categoryItems = [
   { label: 'Passings', value: '0' },
   { label: 'Movies', value: '1' },
   { label: 'Science', value: '2' }
-]
-
-const months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December'
 ]
 
 async function fetchArticles() {
@@ -113,6 +99,9 @@ const getCards = () => {
           :link="card.url"
         ></jigsaw-card>
       </div>
+    </section>
+    <section class="timeline-chart" v-if="articleData">
+      <chart :articleData="articleData"></chart>
     </section>
   </main>
 </template>

@@ -11,8 +11,10 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@kurkle/color": "^0.3.2",
     "@wikimedia/codex": "^1.11.0",
     "@wikimedia/codex-icons": "^1.11.0",
+    "chart.js": "^4.4.3",
     "node-fetch": "^3.3.2",
     "vue": "^3.4.27"
   },
