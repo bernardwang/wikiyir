@@ -27,7 +27,7 @@ const props = defineProps({
 .jigsaw-piece {
   width: 200px;
   height: 200px;
-  mask-image: url(./jigsaw.svg);
+  mask-image: url(../assets/jigsaw.svg);
   mask-repeat: no-repeat;
   min-width: 200px;
   mask-size: 200px;
@@ -44,7 +44,7 @@ const props = defineProps({
   filter: grayscale(1);
 }
 .jigsaw-piece-1 {
-  mask-image: url(jigsaw2.svg);
+  mask-image: url(../assets/jigsaw2.svg);
 }
 .jigsaw-piece-1:hover {
   transform: rotate(-10deg);

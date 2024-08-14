@@ -28,6 +28,7 @@ const categoryItems = [
 
 async function fetchArticles() {
   articleData.value = await getTopArticles({ project: project.value, limit: 10, year: year.value })
+  window.articleData = articleData.value
 }
 
 const getCards = () => {
@@ -41,17 +42,20 @@ const getCards = () => {
 
 <template>
   <header class="header">
-    <img
-      class="logo"
-      src="https://upload.wikimedia.org/wikipedia/commons/e/ed/WP20Symbols_MediaWiki.svg"
-      width="512"
-      height="401"
-    />
-    <h1>Wikipedia Year in Review</h1>
+    <div class="wrapper">
+      <img
+        class="logo"
+        src="https://upload.wikimedia.org/wikipedia/commons/e/ed/WP20Symbols_MediaWiki.svg"
+      />
+      <video class="generated-video" v-if="articleData" width="320" height="240" controls="">
+        <source src="https://moonlit-cannoli-b892ff.netlify.app/final.mp4" type="video/mp4" />
+      </video>
+      <h1>Wikipedia Year in Review</h1>
+    </div>
   </header>
 
   <main>
-    <section class="input-wrapper">
+    <section class="input-wrapper wrapper">
       <div>
         <cdx-label input-id="wiki-input"> Year</cdx-label>
         <cdx-select
@@ -90,18 +94,23 @@ const getCards = () => {
       </div>
     </section>
     <section class="top-articles" v-if="articleData">
-      <h2 class="top-article-heading">Top Articles in {{ year }}</h2>
-      <div class="ribbon">
-        <jigsaw-card
-          v-for="(card, i) in getCards()"
-          :image="card.image"
-          :piece="i % 2"
-          :link="card.url"
-        ></jigsaw-card>
+      <div class="wrapper">
+        <h2 class="top-article-heading">Top Articles in {{ year }}</h2>
+        <div class="ribbon">
+          <jigsaw-card
+            v-for="(card, i) in getCards()"
+            :image="card.image"
+            :piece="i % 2"
+            :link="card.url"
+          ></jigsaw-card>
+        </div>
       </div>
     </section>
-    <section class="timeline-chart" v-if="articleData">
+    <section class="timeline-chart wrapper" v-if="articleData">
       <chart :articleData="articleData"></chart>
+    </section>
+    <section :class="{ wrapper: true, 'map-hidden': !articleData }">
+      <div id="map" class="map" ref="map"></div>
     </section>
   </main>
 </template>
@@ -114,9 +123,23 @@ header {
   flex-direction: column;
   align-items: center;
   padding: 2rem 0;
+  position: relative;
+}
+
+.wrapper {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .logo {
+  width: 300px;
+}
+
+.generated-video {
+  position: absolute;
+  left: calc(50% - 160px);
+  top: 25px;
+  bottom: 0;
 }
 
 .input-wrapper {
@@ -145,5 +168,15 @@ header {
 
 .wiki-input {
   max-width: 256px;
+}
+
+.map {
+  position: relative;
+  width: 100%;
+  height: 500px;
+}
+
+.map-hidden {
+  visibility: hidden;
 }
 </style>

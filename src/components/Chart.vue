@@ -37,7 +37,7 @@ const config = {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top'
+        display: false
       },
       title: {
         display: true,
