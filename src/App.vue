@@ -5,6 +5,7 @@ import { CdxTextInput, CdxButton, CdxIcon, CdxSelect } from '@wikimedia/codex';
 import { cdxIconArrowNext } from '@wikimedia/codex-icons';
 import queryTopArticles from './topArticles.js';
 import JigsawCard from './components/JigsawCard.vue';
+import catFn from './categories.js';
 
 const project = ref('en.wikipedia');
 const year = ref('2024');
@@ -21,9 +22,9 @@ const yearItems = [
 
 const categoryItems = [
 	{ label: 'All', value: '' },
-  { label: 'Movies', value: 'Category:2024_films' },
-	{ label: 'Passings', value: 'Category:2024_deaths' },
-  { label: 'Science', value: 'Category:2024_in_science' }
+	{ label: 'Passings', value: '0' },
+  { label: 'Movies', value: '1' },
+  { label: 'Science', value: '2' }
 ];
 
 async function fetchArticles() {
@@ -33,7 +34,8 @@ async function fetchArticles() {
 
 const getCards = () => {
   if ( category.value && cards.value.byCategory ) {
-    return cards.value.byCategory[category.value];
+    const categoryTitle = catFn( year.value )[ parseInt( category.value, 10 ) ].title;
+    return cards.value.byCategory[categoryTitle];
   } else {
     return cards.value.yearlyTopArticles;
   }

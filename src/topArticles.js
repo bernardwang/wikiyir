@@ -1,8 +1,4 @@
-const CATEGORIES = [
-	'Category:2024_deaths',
-	'Category:2024_films',
-	'Category:2024_in_science'
-];
+import catFn from './categories.js';
 
 const filterOut = ( item ) => ![ 'Special:Search',
     'Taylor_Swift',
@@ -58,8 +54,8 @@ async function getMonthlyTopArticles( project, limit = 1, year = '2023', month =
 	}
 }
 
-async function hydrateArticleList( articles ) {
-	const categories = CATEGORIES.map( ( a ) => encodeURIComponent( a ) ).join('|');
+async function hydrateArticleList( articles, year ) {
+	const categories = catFn( year ).map( ( a ) => encodeURIComponent( a.title ) ).join('|');
 	const titles = articles.map( ( article ) => encodeURIComponent( article.article ) ).join( '|' );
 	const json = await fetch( `https://en.wikipedia.org/w/api.php?pithumbsize=400&pilimit=max&origin=*&action=query&format=json&prop=pageimages%7Ccategories&titles=${titles}&formatversion=2&clprop=&clshow=!hidden&clcategories=${categories}` )
 		.then((r) => r.json());
@@ -74,8 +70,8 @@ async function hydrateArticleList( articles ) {
 	return articles.map( ( article ) => Object.assign( {}, article, lookup[article.article.replace( / /g, '_' )] ) ).filter((article) => !!article.image);
 }
 
-async function hydrate( articlesByMonth ) {
-	const all = await Promise.all( articlesByMonth.map( (articles) => hydrateArticleList( articles ) ) );
+async function hydrate( articlesByMonth, year ) {
+	const all = await Promise.all( articlesByMonth.map( (articles) => hydrateArticleList( articles, year ) ) );
 	return all;
 }
 
@@ -105,7 +101,7 @@ async function querymonthlyTopArticles( options ) {
 		return null;
 	}
 
-	return hydrate( topArticles );
+	return hydrate( topArticles, year );
 }
 
 function getYearlyTopArticles( monthlyTopArticles ) {
@@ -125,11 +121,12 @@ function getYearlyTopArticles( monthlyTopArticles ) {
 	return yearlyTopArticles;
 }
 
-function categorizeTopArticles( monthlyTopArticles ) {
+function categorizeTopArticles( monthlyTopArticles, year ) {
 	const flatList = monthlyTopArticles.flat(1);
 	console.log(flatList);
 	const byCategory = {};
-	CATEGORIES.forEach(( category ) => {
+	catFn( year ).forEach(( categoryObj ) => {
+		const category = categoryObj.title;
 		byCategory[ category ] = flatList.filter((a) => a.categories.includes(category) || a.categories.includes(category.replace(/_/g, ' ')))
 	} );
 	return byCategory;
@@ -141,7 +138,7 @@ async function getTopArticles( options ) {
 	return {
 		monthlyTopArticles,
 		yearlyTopArticles,
-		byCategory: categorizeTopArticles( monthlyTopArticles )
+		byCategory: categorizeTopArticles( monthlyTopArticles, options.year )
 	};
 }
 export default getTopArticles;
