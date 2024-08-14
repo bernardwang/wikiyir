@@ -1,5 +1,5 @@
 <script setup>
-defineProps({
+const props = defineProps({
   image: {
     type: String,
     required: true
@@ -11,40 +11,48 @@ defineProps({
   link: {
     type: String,
     required: true
+  },
+  month: {
+    type: String,
+    required: true
   }
 })
+console.log(props.month)
 </script>
 
 <template>
-    <div :class="'jigsaw-piece jigsaw-piece-' + piece">
-        <a :href="link">
-            <img :src="image">
-         </a>
-    </div>
+  <div :class="'jigsaw-piece jigsaw-piece-' + piece">
+    <a :href="link">
+      <img :src="image" />
+    </a>
+    <span>{{ month }}</span>
+  </div>
 </template>
 
 <style scoped>
 .jigsaw-piece {
-    width: 320px;
-    height: 320px;
-    mask-image: url(./jigsaw.svg);
-    mask-repeat: no-repeat;
-    min-width: 320px;
+  width: 200px;
+  height: 200px;
+  mask-image: url(./jigsaw.svg);
+  mask-repeat: no-repeat;
+  min-width: 200px;
+  mask-size: 200px;
+  margin-left: -35px;
 }
 .jigsaw-piece:hover {
-    transform: rotate(10deg);
-    transition: transform ease-in 100ms;
+  transform: rotate(10deg);
+  transition: transform ease-in 100ms;
 }
 .jigsaw-piece img {
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-    filter: grayscale(1);
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
 }
 .jigsaw-piece-1 {
-    mask-image: url( jigsaw2.svg);
+  mask-image: url(jigsaw2.svg);
 }
 .jigsaw-piece-1:hover {
-    transform: rotate(-10deg);
+  transform: rotate(-10deg);
 }
 </style>
