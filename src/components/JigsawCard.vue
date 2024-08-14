@@ -31,7 +31,7 @@ const props = defineProps({
   mask-repeat: no-repeat;
   min-width: 200px;
   mask-size: 200px;
-  margin-left: -35px;
+  margin-right: -35px;
 }
 .jigsaw-piece:hover {
   transform: rotate(10deg);

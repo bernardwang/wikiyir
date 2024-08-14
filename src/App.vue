@@ -65,9 +65,18 @@ const getCards = () => {
   </header>
 
   <main>
-    <div class="wrapper">
+    <section class="input-wrapper">
       <div>
-        <cdx-label input-id="wiki-input"> Your wiki: </cdx-label>
+        <cdx-label input-id="wiki-input"> Year</cdx-label>
+        <cdx-select
+          v-model:selected="year"
+          :menu-items="yearItems"
+          default-label="Choose an option"
+          class="year-select"
+        />
+      </div>
+      <div>
+        <cdx-label input-id="wiki-input"> Wiki:</cdx-label>
         <cdx-text-input
           required
           pattern="[^\.]*\.(wikivoyage|wikinews|wikiversity|wikibooks|wikiquote|wiktionary|wikifunctions|wikisource|wikipedia|mediawiki|wikidata|wikimedia)"
@@ -76,22 +85,9 @@ const getCards = () => {
           id="wiki-input"
           class="wiki-input"
         ></cdx-text-input>
-        <cdx-select
-          v-model:selected="year"
-          :menu-items="yearItems"
-          default-label="Choose an option"
-          class="year-select"
-        />
       </div>
-      <cdx-button class="submit-btn" @click="fetchArticles" action="progressive" weight="primary">
-        <cdx-icon class="nextIcon" :icon="cdxIconArrowNext"></cdx-icon>
-        <span>Get Year in Review</span>
-      </cdx-button>
-    </div>
-    <section v-if="articleData">
-      <h2>Top Articles in {{ year }}</h2>
-      <div>
-        <cdx-label input-id="filter-input"> Filter categories </cdx-label>
+      <div v-if="articleData">
+        <cdx-label input-id="filter-input"> Categories </cdx-label>
         <cdx-select
           v-model:selected="category"
           :menu-items="categoryItems"
@@ -100,6 +96,15 @@ const getCards = () => {
           id="filter-select"
         />
       </div>
+      <div v-if="!articleData">
+        <cdx-button class="submit-btn" @click="fetchArticles" action="progressive" weight="primary">
+          <cdx-icon class="nextIcon" :icon="cdxIconArrowNext"></cdx-icon>
+          <span>Get Year in Review</span>
+        </cdx-button>
+      </div>
+    </section>
+    <section class="top-articles" v-if="articleData">
+      <h2 class="top-article-heading">Top Articles in {{ year }}</h2>
       <div class="ribbon">
         <jigsaw-card
           v-for="(card, i) in getCards()"
@@ -119,15 +124,34 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 2rem 0;
 }
 
 .logo {
+}
+
+.input-wrapper {
+  padding: 1rem 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+}
+
+.top-articles {
+  background-color: #e9e7c3;
+  padding: 3rem 0;
+}
+.top-article-heading {
+  text-align: center;
 }
 
 .ribbon {
   display: flex;
   overflow-x: scroll;
   max-width: 100vw;
+  height: 100%;
+  overflow-y: hidden;
+  padding: 2rem 0;
 }
 
 .wiki-input {
