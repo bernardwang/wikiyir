@@ -67,3 +67,8 @@ Generating the page involves heavy use of API but could easily be run once and b
 ## When would we show this?
 
 If the page is presented in January, then all data is available. If before January, we'd need to regularly rebuild the data sources on a daily basis.
+
+# Support all-projects on editors apis
+
+Not supported for "Get number of editors" (but supported for "number of new users").
+
