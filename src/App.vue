@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue'
+import initMap from './map';
+import { ref, onUpdated } from 'vue'
 import { CdxLabel, CdxTextInput, CdxButton, CdxIcon, CdxSelect } from '@wikimedia/codex'
 import { cdxIconArrowNext } from '@wikimedia/codex-icons'
 import fetchData from './fetchData.js'
@@ -46,6 +47,10 @@ const getCards = ref( () => {
   } else {
     return articleData.value.yearlyTopArticles
   }
+} );
+
+onUpdated( () => {
+  initMap();
 } );
 </script>
 
@@ -117,7 +122,8 @@ const getCards = ref( () => {
       </div>
     </section>
     <section class="timeline-chart wrapper" v-if="articleData">
-      <chart :articleData="articleData"></chart>
+      <chart :numberMonths="articleData.monthlyTopArticles.length"
+        :dataset="articleData.yearlyTopArticles"></chart>
     </section>
     <section :class="{ wrapper: true, 'map-hidden': !articleData }">
       <div id="map" class="map" ref="map"></div>

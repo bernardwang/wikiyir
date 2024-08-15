@@ -6,6 +6,3 @@ import initMap from './map.js'
 
 createApp(App).mount('#app')
 
-window.addEventListener('load', () => {
-  initMap()
-})

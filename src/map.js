@@ -1,5 +1,9 @@
+let currentMap;
 function initMap() {
-  const mapElem = document.getElementById('map')
+  const mapElem = document.getElementById('map');
+  if ( currentMap ) {
+    mapElem.innerHTML = '';
+  }
   const map = new Datamap({
     element: mapElem,
     data: {
@@ -13,6 +17,7 @@ function initMap() {
       }
     }
   })
+  currentMap = map;
 
   //TODO: Wire up API call when clicking on each country and showing a popup
   document.querySelector('.USA').addEventListener('click', function () {
