@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { CdxLabel, CdxTextInput, CdxButton, CdxIcon, CdxSelect } from '@wikimedia/codex'
 import { cdxIconArrowNext } from '@wikimedia/codex-icons'
-import { getTopArticles } from './topArticles.js'
+import fetchData from './fetchData.js'
 import Chart from './components/Chart.vue'
 import JigsawCard from './components/JigsawCard.vue'
 
@@ -27,7 +27,7 @@ const categoryItems = [
 ]
 
 async function fetchArticles() {
-  articleData.value = await getTopArticles({ project: project.value, limit: 10, year: year.value })
+  articleData.value = await fetchData({ project: project.value, limit: 10, year: year.value })
   window.articleData = articleData.value
 }
 
