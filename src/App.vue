@@ -12,6 +12,11 @@ const year = ref('2024')
 const articleData = ref(null)
 const category = ref('')
 
+const bytesAdded = ref( 0 );
+const numNewEditors = ref( 0 );
+const numEditors = ref( 0 );
+const numEdits = ref( 0 );
+
 const yearItems = [
   { label: '2024', value: '2024' },
   { label: '2023', value: '2023' },
@@ -27,8 +32,21 @@ const categoryItems = [
   { label: 'Science', value: '2' }
 ]
 
+const toReadable = ( num ) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+const updateFromData = ( data ) => {
+  bytesAdded.value = toReadable( data.bytes );
+  numEdits.value = toReadable( data.numEdits );
+  numEditors.value = toReadable( data.numEditors );
+  numNewEditors.value = toReadable( data.numNewEditors );
+}
+
 async function fetchArticles() {
-  articleData.value = await fetchData({ project: project.value, limit: 10, year: year.value })
+  const data = await fetchData({ project: project.value, limit: 10, year: year.value });
+  updateFromData( data );
+  articleData.value = data;
   window.articleData = articleData.value
 }
 
@@ -37,7 +55,9 @@ async function fetchArticles() {
  */
 async function updateIfNewYearSelected( newYear ) {
   if ( articleData.value ) {
-    articleData.value = await fetchData({ project: project.value, limit: 10, year: newYear })
+    const data = await fetchData({ project: project.value, limit: 10, year: newYear });
+    updateFromData( data );
+    articleData.value = data;
   }
 }
 
@@ -128,6 +148,27 @@ onUpdated( () => {
     <section :class="{ wrapper: true, 'map-hidden': !articleData }">
       <div id="map" class="map" ref="map"></div>
     </section>
+    <section v-if="articleData" class="editor-stats wrapper">
+      <div>
+        <dl>
+        <dt>{{ numEditors }}</dt>
+        <dd>editors this year</dd>
+      </dl>
+      <dl>
+        <dt>{{ numNewEditors }}</dt>
+        <dd>new editors</dd>
+      </dl>
+      <dl>
+        <dt>{{ numEdits }}</dt>
+        <dd>edits</dd>
+      </dl>
+      <dl>
+        <dt>{{ bytesAdded }}</dt>
+        <dd>bytes added</dd>
+      </dl>
+      </div>
+      <img src="./assets/community.svg" width="300"/>
+    </section>
   </main>
 </template>
 
@@ -194,5 +235,22 @@ header {
 
 .map-hidden {
   visibility: hidden;
+}
+
+.editor-stats {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  background: #F0BC00;
+  padding: 40px 16px;
+}
+.editor-stats > div {
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+  width: 400px;
+}
+.editor-stats dl {
+  width: 150px;
 }
 </style>
