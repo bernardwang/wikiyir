@@ -3,6 +3,9 @@ import { MONTHS } from './chartUtils.js'
 
 const filterOut = (item) =>
   ![
+    'Bible',
+    "Google_logo",
+    "Wikipedia",
     'Special:Search',
     'Taylor_Swift',
     'Indian_Premier_League',
@@ -14,6 +17,8 @@ const filterOut = (item) =>
     'Griselda_Blanco',
     '2024_Indian_Premier_League',
     'Deaths_in_2024',
+    'Instagram',
+    'Index_(statistics)',
     'YouTube',
     'Main_Page',
     'Cleopatra',
@@ -174,4 +179,5 @@ async function getTopArticles(options) {
     categorizedYearlyTopArticles
   }
 }
+
 export { getTopArticles }

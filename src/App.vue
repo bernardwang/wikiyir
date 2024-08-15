@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import initMap from './map';
+import { ref, onUpdated } from 'vue'
 import { CdxLabel, CdxTextInput, CdxButton, CdxIcon, CdxSelect } from '@wikimedia/codex'
 import { cdxIconArrowNext } from '@wikimedia/codex-icons'
-import { getTopArticles } from './topArticles.js'
+import fetchData from './fetchData.js'
 import Chart from './components/Chart.vue'
 import JigsawCard from './components/JigsawCard.vue'
 
@@ -27,17 +28,30 @@ const categoryItems = [
 ]
 
 async function fetchArticles() {
-  articleData.value = await getTopArticles({ project: project.value, limit: 10, year: year.value })
+  articleData.value = await fetchData({ project: project.value, limit: 10, year: year.value })
   window.articleData = articleData.value
 }
 
-const getCards = () => {
+/**
+ * If a search already got carried out, changing dropdown will update the query.
+ */
+async function updateIfNewYearSelected( newYear ) {
+  if ( articleData.value ) {
+    articleData.value = await fetchData({ project: project.value, limit: 10, year: newYear })
+  }
+}
+
+const getCards = ref( () => {
   if (category.value) {
     return articleData.value.categorizedYearlyTopArticles[category.value]
   } else {
     return articleData.value.yearlyTopArticles
   }
-}
+} );
+
+onUpdated( () => {
+  initMap( project.value, year.value );
+} );
 </script>
 
 <template>
@@ -59,6 +73,7 @@ const getCards = () => {
       <div>
         <cdx-label input-id="wiki-input"> Year</cdx-label>
         <cdx-select
+          @update:selected="updateIfNewYearSelected"
           v-model:selected="year"
           :menu-items="yearItems"
           default-label="Choose an option"
@@ -69,6 +84,7 @@ const getCards = () => {
         <cdx-label input-id="wiki-input"> Wiki:</cdx-label>
         <cdx-text-input
           required
+          :disabled="articleData !== null"
           pattern="[^\.]*\.(wikivoyage|wikinews|wikiversity|wikibooks|wikiquote|wiktionary|wikifunctions|wikisource|wikipedia|mediawiki|wikidata|wikimedia)"
           type="text"
           v-model="project"
@@ -81,7 +97,6 @@ const getCards = () => {
         <cdx-select
           v-model:selected="category"
           :menu-items="categoryItems"
-          @change="updateCards"
           default-label="Filter"
           id="filter-select"
         />
@@ -107,7 +122,8 @@ const getCards = () => {
       </div>
     </section>
     <section class="timeline-chart wrapper" v-if="articleData">
-      <chart :articleData="articleData"></chart>
+      <chart :numberMonths="articleData.monthlyTopArticles.length"
+        :dataset="articleData.yearlyTopArticles"></chart>
     </section>
     <section :class="{ wrapper: true, 'map-hidden': !articleData }">
       <div id="map" class="map" ref="map"></div>
