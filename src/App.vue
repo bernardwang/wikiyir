@@ -128,7 +128,7 @@ onUpdated( () => {
     <section :class="{ wrapper: true, 'map-hidden': !articleData }">
       <div id="map" class="map" ref="map"></div>
     </section>
-    <section class="editor-stats wrapper">
+    <section v-if="articleData" class="editor-stats wrapper">
       <div>
         <dl>
         <dt>17k</dt>
