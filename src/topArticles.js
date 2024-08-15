@@ -4,8 +4,8 @@ import { MONTHS } from './chartUtils.js'
 const filterOut = (item) =>
   ![
     'Bible',
-    "Google_logo",
-    "Wikipedia",
+    'Google_logo',
+    'Wikipedia',
     'Special:Search',
     'Taylor_Swift',
     'Indian_Premier_League',
@@ -39,7 +39,6 @@ async function getMonthlyTopArticles(
   excludeMainPage = true
 ) {
   const endpoint = `https://wikimedia.org/api/rest_v1/metrics/pageviews/top/${project}/all-access/${year}/${month}/all-days`
-
   try {
     const response = await fetch(endpoint)
 
@@ -67,6 +66,7 @@ async function getMonthlyTopArticles(
           a.url = `${host}/wiki/${encodedTitle}`
           return a
         })
+        .slice(0, 10)
       return articles
     } else {
       // eslint-disable-next-line no-console
@@ -101,9 +101,38 @@ async function hydrateArticles(articles, year) {
     .filter((article) => !!article.image)
 }
 
+export async function getArticleHistory(article, project, year) {
+  const title = encodeURIComponent(article.article)
+  const months = getMonthsList(year)
+  const viewsData = await Promise.all(
+    months.map(async (month) => {
+      const lastDate = new Date(year, month, 0).getDate()
+      const json = await fetch(
+        `https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/${project}.org/all-access/all-agents/${title}/daily/${year}${month}01/${year}${month}${lastDate}`
+      ).then((r) => r.json())
+      return json.items.map((i) => ({
+        timestamp: i.timestamp,
+        views: i.views
+      }))
+    })
+  )
+  return viewsData.flat(1)
+}
+
 async function hydrate(articlesByMonth, year) {
   const all = await Promise.all(articlesByMonth.map((articles) => hydrateArticles(articles, year)))
   return all
+}
+
+function getMonthsList(year) {
+  const currentDate = new Date()
+  const totalMonths = year == currentDate.getFullYear() ? currentDate.getMonth() : 12
+  const months = []
+  for (let i = 1; i <= totalMonths; i++) {
+    const month = i < 10 ? `0${i}` : i.toString()
+    months.push(month)
+  }
+  return months
 }
 
 // Creates test cases based on the top Wikipedia articles obtained from getMonthlyTopArticles.
@@ -117,15 +146,12 @@ async function hydrate(articlesByMonth, year) {
  */
 async function queryMonthlyTopArticles(options) {
   const { project = 'en.wikipedia', limit = 15, year = '2024' } = options
-  const currentDate = new Date()
-  const totalMonths = year == currentDate.getFullYear() ? currentDate.getMonth() : 12
-
-  let queries = []
-  for (let i = 1; i <= totalMonths; i++) {
-    const month = i < 10 ? `0${i}` : i.toString()
-    queries.push(getMonthlyTopArticles(project, limit, year, month))
-  }
-  const topArticles = await Promise.all(queries)
+  const months = getMonthsList(year)
+  const topArticles = await Promise.all(
+    months.map((month) => {
+      return getMonthlyTopArticles(project, limit, year, month)
+    })
+  )
 
   if (!topArticles) {
     console.error('Failed to fetch.')
@@ -139,7 +165,7 @@ function getYearlyTopArticles(monthlyTopArticles) {
   const aggregateArticles = {}
   monthlyTopArticles.flat(1).forEach((a) => {
     if (aggregateArticles[a.article]) {
-      aggregateArticles[a.article].views = Math.max(aggregateArticles[a.article].views, a.views)
+      aggregateArticles[a.article].views += a.views
       aggregateArticles[a.article].chart.push({ x: MONTHS[Number(a.month)], y: a.views })
     } else {
       aggregateArticles[a.article] = a
@@ -148,11 +174,10 @@ function getYearlyTopArticles(monthlyTopArticles) {
       delete aggregateArticles[a.article].rank
     }
   })
-  console.log(aggregateArticles)
   const yearlyTopArticles = Object.values(aggregateArticles).sort((a, b) => {
     return b.views - a.views
   })
-  return yearlyTopArticles
+  return yearlyTopArticles.slice(0, 10)
 }
 
 function categorizeArticles(topArticles, year) {

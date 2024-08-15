@@ -1,21 +1,28 @@
 <script setup>
-import initMap from './map';
-import { ref, onUpdated } from 'vue'
+import initMap from './map'
+import { ref, onMounted, watch } from 'vue'
 import { CdxLabel, CdxTextInput, CdxButton, CdxIcon, CdxSelect } from '@wikimedia/codex'
 import { cdxIconArrowNext } from '@wikimedia/codex-icons'
+import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
 import fetchData from './fetchData.js'
-import Chart from './components/Chart.vue'
-import JigsawCard from './components/JigsawCard.vue'
+import { getArticleHistory } from './topArticles.js'
+import TopArticlesChart from './components/TopArticlesChart.vue'
+import ArticleHistoryChart from './components/ArticleHistoryChart.vue'
+import ArticleSlide from './components/ArticleSlide.vue'
+import 'vue3-carousel/dist/carousel.css'
 
 const project = ref('en.wikipedia')
 const year = ref('2024')
 const articleData = ref(null)
 const category = ref('')
+const currentArticleIndex = ref(0)
+const currentArticleHistoryData = ref(null)
+const currentArticleTitle = ref('')
 
-const bytesAdded = ref( 0 );
-const numNewEditors = ref( 0 );
-const numEditors = ref( 0 );
-const numEdits = ref( 0 );
+const bytesAdded = ref(0)
+const numNewEditors = ref(0)
+const numEditors = ref(0)
+const numEdits = ref(0)
 
 const yearItems = [
   { label: '2024', value: '2024' },
@@ -32,46 +39,69 @@ const categoryItems = [
   { label: 'Science', value: '2' }
 ]
 
-const toReadable = ( num ) => {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+const toReadable = (num) => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
-const updateFromData = ( data ) => {
-  bytesAdded.value = toReadable( data.bytes );
-  numEdits.value = toReadable( data.numEdits );
-  numEditors.value = toReadable( data.numEditors );
-  numNewEditors.value = toReadable( data.numNewEditors );
+const updateFromData = (data) => {
+  bytesAdded.value = toReadable(data.bytes)
+  numEdits.value = toReadable(data.numEdits)
+  numEditors.value = toReadable(data.numEditors)
+  numNewEditors.value = toReadable(data.numNewEditors)
 }
 
 async function fetchArticles() {
-  const data = await fetchData({ project: project.value, limit: 10, year: year.value });
-  updateFromData( data );
-  articleData.value = data;
+  const data = await fetchData({ project: project.value, limit: 10, year: year.value })
+  updateFromData(data)
+  articleData.value = data
   window.articleData = articleData.value
 }
 
 /**
  * If a search already got carried out, changing dropdown will update the query.
  */
-async function updateIfNewYearSelected( newYear ) {
-  if ( articleData.value ) {
-    const data = await fetchData({ project: project.value, limit: 10, year: newYear });
-    updateFromData( data );
-    articleData.value = data;
+async function updateIfNewYearSelected(newYear) {
+  if (articleData.value) {
+    const data = await fetchData({ project: project.value, limit: 10, year: newYear })
+    updateFromData(data)
+    articleData.value = data
   }
 }
 
-const getCards = ref( () => {
+const getSlideData = ref(() => {
   if (category.value) {
     return articleData.value.categorizedYearlyTopArticles[category.value]
   } else {
     return articleData.value.yearlyTopArticles
   }
-} );
+})
 
-onUpdated( () => {
-  initMap( project.value, year.value );
-} );
+async function getArticleHistoryData(currentArticleIndex) {
+  const currentArticle = articleData.value.yearlyTopArticles[currentArticleIndex]
+  currentArticleHistoryData.value = await getArticleHistory(
+    currentArticle,
+    project.value,
+    year.value
+  )
+  currentArticleTitle.value = currentArticle.article.replace(/_/g, ' ')
+}
+
+watch(project, (newProject) => {
+  initMap(newProject, year.value)
+})
+
+watch(year, (newYear) => {
+  initMap(project.value, newYear)
+})
+
+watch(currentArticleIndex, async (newIndex) => {
+  getArticleHistoryData(newIndex)
+})
+
+watch(articleData, async () => {
+  getArticleHistoryData(currentArticleIndex.value)
+  initMap(project.value, year.value)
+})
 </script>
 
 <template>
@@ -112,7 +142,7 @@ onUpdated( () => {
           class="wiki-input"
         ></cdx-text-input>
       </div>
-      <div v-if="articleData">
+      <div v-if="false">
         <cdx-label input-id="filter-input"> Categories </cdx-label>
         <cdx-select
           v-model:selected="category"
@@ -121,7 +151,7 @@ onUpdated( () => {
           id="filter-select"
         />
       </div>
-      <div v-if="!articleData">
+      <div>
         <cdx-button class="submit-btn" @click="fetchArticles" action="progressive" weight="primary">
           <cdx-icon class="nextIcon" :icon="cdxIconArrowNext"></cdx-icon>
           <span>Get Year in Review</span>
@@ -130,20 +160,33 @@ onUpdated( () => {
     </section>
     <section class="top-articles" v-if="articleData">
       <div class="wrapper">
-        <h2 class="top-article-heading">Top Articles in {{ year }}</h2>
-        <div class="ribbon">
-          <jigsaw-card
-            v-for="(card, i) in getCards()"
-            :image="card.image"
-            :piece="i % 2"
-            :link="card.url"
-          ></jigsaw-card>
-        </div>
+        <h2 class="top-article-heading">Most visited articles in {{ year }}</h2>
+        <carousel :items-to-show="1" v-model="currentArticleIndex">
+          <slide v-for="(slide, i) in getSlideData()" :key="i">
+            <article-slide
+              :data="slide"
+              :index="i + 1"
+              :isCurrent="i === currentArticleIndex"
+            ></article-slide>
+          </slide>
+          <template #addons>
+            <navigation />
+            <pagination />
+          </template>
+        </carousel>
       </div>
     </section>
-    <section class="timeline-chart wrapper" v-if="articleData">
-      <chart :numberMonths="articleData.monthlyTopArticles.length"
-        :dataset="articleData.yearlyTopArticles"></chart>
+    <section class="timeline-chart wrapper" v-if="articleData && false">
+      <top-articles-chart
+        :numberMonths="articleData.monthlyTopArticles.length"
+        :dataset="articleData.yearlyTopArticles"
+      ></top-articles-chart>
+    </section>
+    <section class="timeline-chart wrapper" v-if="currentArticleHistoryData">
+      <article-history-chart
+        :dataset="currentArticleHistoryData"
+        :title="currentArticleTitle"
+      ></article-history-chart>
     </section>
     <section :class="{ wrapper: true, 'map-hidden': !articleData }">
       <div id="map" class="map" ref="map"></div>
@@ -151,23 +194,23 @@ onUpdated( () => {
     <section v-if="articleData" class="editor-stats wrapper">
       <div>
         <dl>
-        <dt>{{ numEditors }}</dt>
-        <dd>editors this year</dd>
-      </dl>
-      <dl>
-        <dt>{{ numNewEditors }}</dt>
-        <dd>new editors</dd>
-      </dl>
-      <dl>
-        <dt>{{ numEdits }}</dt>
-        <dd>edits</dd>
-      </dl>
-      <dl>
-        <dt>{{ bytesAdded }}</dt>
-        <dd>bytes added</dd>
-      </dl>
+          <dt>{{ numEditors }}</dt>
+          <dd>editors this year</dd>
+        </dl>
+        <dl>
+          <dt>{{ numNewEditors }}</dt>
+          <dd>new editors</dd>
+        </dl>
+        <dl>
+          <dt>{{ numEdits }}</dt>
+          <dd>edits</dd>
+        </dl>
+        <dl>
+          <dt>{{ bytesAdded }}</dt>
+          <dd>bytes added</dd>
+        </dl>
       </div>
-      <img src="./assets/community.svg" width="300"/>
+      <img src="./assets/community.svg" width="300" />
     </section>
   </main>
 </template>
@@ -208,7 +251,7 @@ header {
 
 .top-articles {
   background-color: #e9e7c3;
-  padding: 3rem 0;
+  padding: 1rem 0;
 }
 .top-article-heading {
   text-align: center;
@@ -241,7 +284,7 @@ header {
   display: flex;
   gap: 50px;
   justify-content: center;
-  background: #F0BC00;
+  background: #f0bc00;
   padding: 40px 16px;
 }
 .editor-stats > div {
