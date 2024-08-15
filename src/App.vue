@@ -128,6 +128,27 @@ onUpdated( () => {
     <section :class="{ wrapper: true, 'map-hidden': !articleData }">
       <div id="map" class="map" ref="map"></div>
     </section>
+    <section class="editor-stats wrapper">
+      <div>
+        <dl>
+        <dt>17k</dt>
+        <dd>editors this year</dd>
+      </dl>
+      <dl>
+        <dt>9000</dt>
+        <dd>hours editing</dd>
+      </dl>
+      <dl>
+        <dt>2</dt>
+        <dd>new languages</dd>
+      </dl>
+      <dl>
+        <dt>2k</dt>
+        <dd>bytes added</dd>
+      </dl>
+      </div>
+      <img src="./assets/community.svg" width="300"/>
+    </section>
   </main>
 </template>
 
@@ -194,5 +215,22 @@ header {
 
 .map-hidden {
   visibility: hidden;
+}
+
+.editor-stats {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  background: #F0BC00;
+  padding: 40px 16px;
+}
+.editor-stats > div {
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+  width: 400px;
+}
+.editor-stats dl {
+  width: 150px;
 }
 </style>
