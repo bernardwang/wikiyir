@@ -68,7 +68,7 @@ function initMap( project, year ) {
           }
           document.getElementById('mapPopup').innerHTML = html;
         });
-        return `<div id="mapPopup">${country}</div>`;
+        return `<div id="mapPopup">Loading information for ${country}...</div>`;
       }
     },
     data: {

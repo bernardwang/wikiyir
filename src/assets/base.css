@@ -89,4 +89,5 @@ body {
   background: white;
   padding: 8px;
   border: solid 1px black;
+  max-width: 200px;
 }
