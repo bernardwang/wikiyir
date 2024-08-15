@@ -19,6 +19,7 @@
     "datamaps": "^0.5.9",
     "node-fetch": "^3.3.2",
     "vue": "^3.4.27",
+    "vue-chartjs": "^5.3.1",
     "vue3-carousel": "^0.3.3"
   },
   "devDependencies": {
