@@ -50,7 +50,7 @@ const getCards = ref( () => {
 } );
 
 onUpdated( () => {
-  initMap();
+  initMap( project.value, year.value );
 } );
 </script>
 
