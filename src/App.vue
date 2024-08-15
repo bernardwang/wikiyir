@@ -31,13 +31,22 @@ async function fetchArticles() {
   window.articleData = articleData.value
 }
 
-const getCards = () => {
+/**
+ * If a search already got carried out, changing dropdown will update the query.
+ */
+async function updateIfNewYearSelected( newYear ) {
+  if ( articleData.value ) {
+    articleData.value = await fetchData({ project: project.value, limit: 10, year: newYear })
+  }
+}
+
+const getCards = ref( () => {
   if (category.value) {
     return articleData.value.categorizedYearlyTopArticles[category.value]
   } else {
     return articleData.value.yearlyTopArticles
   }
-}
+} );
 </script>
 
 <template>
@@ -59,6 +68,7 @@ const getCards = () => {
       <div>
         <cdx-label input-id="wiki-input"> Year</cdx-label>
         <cdx-select
+          @update:selected="updateIfNewYearSelected"
           v-model:selected="year"
           :menu-items="yearItems"
           default-label="Choose an option"
@@ -69,6 +79,7 @@ const getCards = () => {
         <cdx-label input-id="wiki-input"> Wiki:</cdx-label>
         <cdx-text-input
           required
+          :disabled="articleData !== null"
           pattern="[^\.]*\.(wikivoyage|wikinews|wikiversity|wikibooks|wikiquote|wiktionary|wikifunctions|wikisource|wikipedia|mediawiki|wikidata|wikimedia)"
           type="text"
           v-model="project"
@@ -81,7 +92,6 @@ const getCards = () => {
         <cdx-select
           v-model:selected="category"
           :menu-items="categoryItems"
-          @change="updateCards"
           default-label="Filter"
           id="filter-select"
         />
