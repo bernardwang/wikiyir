@@ -3,6 +3,9 @@ import { MONTHS } from './chartUtils.js'
 
 const filterOut = (item) =>
   ![
+    'Bible',
+    "Google_logo",
+    "Wikipedia",
     'Special:Search',
     'Taylor_Swift',
     'Indian_Premier_League',
