@@ -23,7 +23,7 @@ const makeChart = () => {
   const dataset = props.dataset.map((a, i) => {
     const color = colorsList[i % colorsList.length]
     return {
-      label: a.article,
+      label: a.article.replace(/_/g, ' '),
       borderColor: color,
       data: a.chart,
       backgroundColor: transparentize(color, 0.5)
