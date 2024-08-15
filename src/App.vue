@@ -10,6 +10,8 @@ import TopArticlesChart from './components/TopArticlesChart.vue'
 import ArticleHistoryChart from './components/ArticleHistoryChart.vue'
 import ArticleSlide from './components/ArticleSlide.vue'
 import 'vue3-carousel/dist/carousel.css'
+import MostEditedArticles from './components/MostEditedArticles.vue'
+import { Suspense } from 'vue'
 
 const project = ref('en.wikipedia')
 const year = ref('2024')
@@ -23,6 +25,8 @@ const bytesAdded = ref(0)
 const numNewEditors = ref(0)
 const numEditors = ref(0)
 const numEdits = ref(0)
+
+const mostEditedArticles =  ref(null)
 
 const yearItems = [
   { label: '2024', value: '2024' },
@@ -55,6 +59,7 @@ async function fetchArticles() {
   updateFromData(data)
   articleData.value = data
   window.articleData = articleData.value
+  await getMostEditedArticles()
 }
 
 /**
@@ -86,6 +91,15 @@ async function getArticleHistoryData(currentArticleIndex) {
   currentArticleTitle.value = currentArticle.article.replace(/_/g, ' ')
 }
 
+async function getMostEditedArticles() {
+  if (articleData.value && articleData.value.mostEditedArticles) {
+    mostEditedArticles.value = articleData.value.mostEditedArticles
+  } else {
+    const data = await fetchData({ project: project.value, limit: 10, year: year.value })
+    mostEditedArticles.value = data.mostEditedArticles
+  }
+}
+
 watch(project, (newProject) => {
   initMap(newProject, year.value)
 })
@@ -102,6 +116,8 @@ watch(articleData, async () => {
   getArticleHistoryData(currentArticleIndex.value)
   initMap(project.value, year.value)
 })
+
+
 </script>
 
 <template>
@@ -283,6 +299,19 @@ watch(articleData, async () => {
         <img class="svg" src="./assets/puzzleglobe.svg" />
       </div>
     </section>
+    <section v-if="mostEditedArticles && mostEditedArticles.length > 0" class="edit-stats wrapper">
+      <div>
+        <h2>Most Edited Articles</h2>
+        <Suspense>
+          <template #default>
+            <MostEditedArticles :data="mostEditedArticles" />
+          </template>
+          <template #fallback>
+            <p>Loading most edited articles...</p>
+          </template>
+        </Suspense>
+      </div>
+    </section>
   </main>
 </template>
 
@@ -411,14 +440,5 @@ watch(articleData, async () => {
 
 .editor-stats dl {
   width: 150px;
-}
-.editor-stats dt {
-  font-weight: bold;
-}
-
-.editor-stats {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
 }
 </style>
