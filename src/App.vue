@@ -13,6 +13,7 @@ import 'vue3-carousel/dist/carousel.css'
 import MostEditedArticles from './components/MostEditedArticles.vue'
 import BytesAdded from './components/BytesAdded.vue'
 import StickyFooter from './components/StickyFooter.vue'
+import DonateToday from './components/DonateToday.vue'
 
 const project = ref('en.wikipedia')
 const year = ref('2024')
@@ -235,6 +236,9 @@ watch(currentArticleHistoryData, (newData) => {
       <section v-if="articleData" class="bytes-stats wrapper">
         <BytesAdded :data="bytesAdded" />
       </section>
+      <section v-if="articleData" class="donate-today wrapper">
+        <DonateToday />
+      </section>
     </main>
 
     <StickyFooter />
@@ -334,6 +338,7 @@ header {
   background: #DCF3EC;
   padding: 40px 16px;
 }
+
 </style>
 
 <style>
