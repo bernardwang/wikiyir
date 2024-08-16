@@ -1,6 +1,87 @@
+.splash-container {
+  width: 100%;
+  background: #0d65c0;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
+  position: relative;
+}
+
+.splash {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+.splash-text {
+  max-width: 300px;
+}
+.bytes {
+  background: #dcf3ec;
+  color: black;
+}
+.heart {
+  background: #e5c0c0;
+  color: black;
+}
 .wrapper {
-  max-width: 800px;
+  max-width: 650px;
   margin: 0 auto;
+  width: 100%;
+}
+.svg {
+  width: 300px;
+}
+
+.carousel {
+  margin-top: 1rem;
+}
+
+.input {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+}
+.top-articles {
+  padding: 1rem 0;
+}
+.timeline-chart {
+  padding: 1rem 0;
+}
+
+.wiki-input {
+  max-width: 200px;
+}
+.year-input {
+  max-width: 200px;
+}
+.map-hidden {
+  visibility: hidden;
+}
+.editors {
+  background: #f9f9f0;
+}
+.editor-stats-container {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  background: #fbeebf;
+  padding: 20px 16px;
+}
+.editor-stats-container > div {
+  justify-content: center;
+}
+.editor-stats dl {
+  width: 150px;
+}
+.editor-stats dt {
+  font-weight: bold;
+}
+.editor-stats {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
 }
 
 .input-wrapper {
@@ -10,62 +91,22 @@
   justify-content: space-around;
 }
 
-.top-articles {
-  background-color: #e9e7c3;
-  padding: 1rem 0;
-}
-.top-article-heading {
-  text-align: center;
-}
-
-.ribbon {
-  display: flex;
-  overflow-x: scroll;
-  max-width: 100vw;
-  height: 100%;
-  overflow-y: hidden;
-  padding: 2rem 0;
-}
-
-.wiki-input {
-  max-width: 256px;
-}
-
 .map {
   position: relative;
   width: 100%;
-  height: 500px;
+  height: 300px;
 }
 
 .map-hidden {
   visibility: hidden;
 }
 
-.editor-stats {
-  display: flex;
-  gap: 50px;
-  justify-content: center;
-  background: #f0bc00;
-  padding: 40px 16px;
-}
-.editor-stats > div {
-  display: flex;
-  flex-flow: wrap;
-  justify-content: center;
-  width: 400px;
-}
-.editor-stats dl {
-  width: 150px;
-}
-
-.edit-stats {
-  background: #F9F9F0;
-}
-
 .bytes-stats {
   display: flex;
   gap: 50px;
   justify-content: center;
-  background: #DCF3EC;
-  padding: 40px 16px;
+  background: #dcf3ec;
+}
+.donate-today {
+  background-color: #f8e6e6;
 }

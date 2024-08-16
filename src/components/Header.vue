@@ -1,17 +1,21 @@
 <template>
-  <header class="header">
-    <div class="wrapper">
-      <img
-        class="logo"
-        src="https://upload.wikimedia.org/wikipedia/commons/e/ed/WP20Symbols_MediaWiki.svg"
-        alt="Wikipedia logo"
-      />
-      <video class="generated-video" v-if="hasArticleData" width="320" height="240" controls>
+  <section class="splash-container">
+    <div class="splash wrapper">
+      <div class="splash-text">
+        <h1>Wikipedia Year in Review</h1>
+        <p>
+          Wikipedia is the world’s essential and reliable resource dedicated to recording and
+          preserving the world’s knowledge, ensuring that everyone has access to our shared history.
+          Without this collective effort, much of what shapes our world today would be lost, and
+          future generations would miss out on understanding our collective journey.
+        </p>
+      </div>
+      <img class="svg invert" src="../assets/brain.svg" />
+      <video class="generated-video" v-if="hasArticleData" width="420" height="340" controls="">
         <source src="https://moonlit-cannoli-b892ff.netlify.app/final.mp4" type="video/mp4" />
       </video>
-      <h1>Wikipedia Year in Review</h1>
     </div>
-  </header>
+  </section>
 </template>
 
 <script setup>
@@ -20,13 +24,15 @@ defineProps({
     type: Boolean,
     default: false
   }
-});
+})
 </script>
 
 <style scoped>
-.header {
+.splash-container {
   width: 100%;
-  background-color: #e679a6;
+  height: 400px;
+  background: #0d65c0;
+  color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -34,19 +40,29 @@ defineProps({
   position: relative;
 }
 
-.wrapper {
-  max-width: 800px;
-  margin: 0 auto;
+.splash {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+.splash-text {
+  max-width: 300px;
 }
 
-.logo {
-  width: 300px;
+.svg {
+  width: 400px;
+}
+.invert {
+  filter: invert(1);
+}
+
+.wrapper {
+  margin: 0 auto;
 }
 
 .generated-video {
   position: absolute;
-  left: calc(50% - 160px);
-  top: 25px;
-  bottom: 0;
+  right: 10%;
+  top: 30px;
 }
 </style>

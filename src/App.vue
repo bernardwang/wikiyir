@@ -161,7 +161,12 @@ watch(currentArticleHistoryData, (newData) => {
           />
         </div>
         <div>
-          <cdx-button class="submit-btn" @click="fetchArticles" action="progressive" weight="primary">
+          <cdx-button
+            class="submit-btn"
+            @click="fetchArticles"
+            action="progressive"
+            weight="primary"
+          >
             <cdx-icon class="nextIcon" :icon="cdxIconArrowNext"></cdx-icon>
             <span>Get Year in Review</span>
           </cdx-button>
@@ -193,11 +198,8 @@ watch(currentArticleHistoryData, (newData) => {
           :title="currentArticleTitle"
         ></article-history-chart>
       </section>
-      <section :class="{ wrapper: true, 'map-hidden': !articleData }">
-        <div id="map" class="map" ref="map"></div>
-      </section>
-      <section v-if="articleData" class="editor-stats wrapper">
-        <div>
+      <section v-if="articleData" class="editor-stats-container">
+        <div class="editor-stats wrapper">
           <dl>
             <dt>{{ numEditors }}</dt>
             <dd>editors this year</dd>
@@ -215,21 +217,39 @@ watch(currentArticleHistoryData, (newData) => {
             <dd>bytes added</dd>
           </dl>
         </div>
-        <img src="./assets/community.svg" width="300" />
+      </section>
+      <section :class="{ wrapper: true, 'map-hidden': !articleData }">
+        <h2>Most visited articles worldwide</h2>
+        <hr />
+        <div id="map" class="map" ref="map"></div>
+      </section>
+      <section class="splash-container knowledge">
+        <div class="splash wrapper">
+          <div class="splash-text">
+            <h2>Knowledge is human.</h2>
+            <p>
+              This vast repository of knowledge is only made possible through the work of volunteer
+              editors, who dedicate untold numbers of hours to writing articles, fixing mistakes,
+              uploading images, and making the wikis better for everyone on the planet. These
+              Wikipedians are the beating heart of the project, deeply committed to the accuracy and
+              accessibility of information.
+            </p>
+          </div>
+          <img class="svg" src="./assets/community.svg" />
+        </div>
       </section>
       <section v-if="articleData" class="edit-stats wrapper">
         <div>
           <MostEditedArticles :data="mostEditedArticles" />
         </div>
       </section>
-      <section v-if="articleData" class="bytes-stats wrapper">
+      <section v-if="articleData" class="bytes-stats">
         <BytesAdded :data="bytesAdded" />
       </section>
-      <section v-if="articleData" class="donate-today wrapper">
+      <section v-if="articleData" class="donate-today">
         <DonateToday />
       </section>
     </main>
-
     <StickyFooter />
   </div>
 </template>
