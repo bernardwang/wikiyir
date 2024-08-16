@@ -138,7 +138,7 @@ watch(currentArticleHistoryData, (newData) => {
       </div>
     </header>
 
-    <main>
+    <main class="main-content">
       <section class="input-wrapper wrapper">
         <div>
           <cdx-label input-id="wiki-input"> Year</cdx-label>
@@ -351,6 +351,7 @@ header {
 /* Ensure main content takes up available space */
 .main-content {
   flex: 1 0 auto;
+  padding-bottom: 60px; /* Adjust this value based on your footer height */
 }
 
 /* You may need to adjust other global styles */
