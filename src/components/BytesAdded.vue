@@ -1,7 +1,7 @@
 <template>
   <div class="container wrapper">
     <div class="grid-area">
-      <div v-for="n in 132" :key="n" class="grid-item"></div>
+      <div v-for="n in getSquares()" :key="n" class="grid-item"></div>
     </div>
     <div class="text-area">
       <h2>{{ formatNumber(data) }} bytes added</h2>
@@ -19,7 +19,7 @@
 <script setup>
 import { defineProps } from 'vue'
 
-defineProps({
+const props = defineProps({
   data: {
     type: [Number, String],
     required: true
@@ -28,6 +28,11 @@ defineProps({
 
 function formatNumber(num) {
   return typeof num === 'number' ? num.toLocaleString() : num
+}
+
+function getSquares() {
+  const num = Math.floor(parseInt(props.data.replace(/,/g, '')) / 30303030)
+  return num
 }
 </script>
 

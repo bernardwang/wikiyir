@@ -11,7 +11,7 @@
         </p>
       </div>
       <img class="svg invert" src="../assets/brain.svg" />
-      <video class="generated-video" v-if="hasArticleData" width="320" height="240" controls="">
+      <video class="generated-video" v-if="hasArticleData" width="420" height="340" controls="">
         <source src="https://moonlit-cannoli-b892ff.netlify.app/final.mp4" type="video/mp4" />
       </video>
     </div>
@@ -30,6 +30,7 @@ defineProps({
 <style scoped>
 .splash-container {
   width: 100%;
+  height: 400px;
   background: #0d65c0;
   color: white;
   display: flex;
@@ -49,7 +50,7 @@ defineProps({
 }
 
 .svg {
-  width: 300px;
+  width: 400px;
 }
 .invert {
   filter: invert(1);
@@ -61,7 +62,7 @@ defineProps({
 
 .generated-video {
   position: absolute;
-  right: 15%;
+  right: 10%;
   top: 30px;
 }
 </style>
