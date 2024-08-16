@@ -1,15 +1,19 @@
 <template>
   <header class="header">
-    <div class="wrapper">
-      <img
+    <div class="wrapper welcome">
+      <div>
+        <h1>Wikipedia Year in Review</h1>
+        <p v-if="!hasArticleData">
+          Wikipedia is the world’s essential and reliable resource dedicated to recording and preserving the world’s knowledge, ensuring that everyone has access to our shared history. Without this collective effort, much of what shapes our world today would be lost, and future generations would miss out on understanding our collective journey.
+        </p>
+      </div>
+      <img v-if="!hasArticleData"
         class="logo"
-        src="https://upload.wikimedia.org/wikipedia/commons/e/ed/WP20Symbols_MediaWiki.svg"
-        alt="Wikipedia logo"
+        src="../assets/brain.svg"
       />
-      <video class="generated-video" v-if="hasArticleData" width="320" height="240" controls>
+      <video class="generated-video" v-if="hasArticleData" width="320" height="240" controls="">
         <source src="https://moonlit-cannoli-b892ff.netlify.app/final.mp4" type="video/mp4" />
       </video>
-      <h1>Wikipedia Year in Review</h1>
     </div>
   </header>
 </template>
@@ -42,11 +46,12 @@ defineProps({
 .logo {
   width: 300px;
 }
-
-.generated-video {
-  position: absolute;
-  left: calc(50% - 160px);
-  top: 25px;
-  bottom: 0;
+.welcome {
+  color: white;
+  display: flex;
+  font-size: 24px;
+}
+.welcome h1 {
+  font-size: 56px;
 }
 </style>
