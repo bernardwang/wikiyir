@@ -241,6 +241,13 @@ watch(articleData, async () => {
         <img class="svg" src="./assets/community.svg" />
       </div>
     </section>
+    <section class="splash-container editors">
+      <div class="splash wrapper">
+        <h2>Most edited articles</h2>
+        <hr />
+        <div></div>
+      </div>
+    </section>
     <section class="splash-container bytes">
       <div class="splash wrapper">
         <img class="svg" src="./assets/bytes.png" />
@@ -319,6 +326,7 @@ watch(articleData, async () => {
 .wrapper {
   max-width: 650px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .svg {
@@ -382,6 +390,10 @@ watch(articleData, async () => {
 
 .map-hidden {
   visibility: hidden;
+}
+
+.editors {
+  background: #f9f9f0;
 }
 
 .editor-stats-container {
