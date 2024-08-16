@@ -1,5 +1,5 @@
-import { getTopArticles } from "./src/topArticles.js";
-import { getEditorActivity } from "./src/editorActivity.js";
+import { TopArticlesAPI, EditActivityAPI, EditorActivityAPI} from './src/services/api/index.js';
+
 import fs from 'fs';
 
 const sleep = ( seconds ) => new Promise( ( resolve ) => {
@@ -16,9 +16,10 @@ for ( let i = 0; i < projects.length; i++ ) {
         const project = projects[i];
         const year = years[j];
         await sleep( 5 );
-        const editorStats = await getEditorActivity( project, year );
+        const editorStats = await EditorActivityAPI.getEditorActivity( project, year );
+        const editStats = await EditActivityAPI.getEditActivity( project, year );
         await sleep( 5 );
-        const json = await getTopArticles({ project, limit: 10, year });
-        fs.writeFileSync( `public/${year}-${project}.json`, JSON.stringify( Object.assign( {}, json, editorStats ) ) );
+        const json = await TopArticlesAPI.getTopArticles({ project, limit: 10, year });
+        fs.writeFileSync( `public/${year}-${project}.json`, JSON.stringify( Object.assign( {}, json, editorStats, editStats ) ) );
     }
 }

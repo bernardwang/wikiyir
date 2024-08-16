@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUpdated } from 'vue'
 import Chart from 'chart.js/auto'
-import { MONTHS, colorsList, transparentize } from '../chartUtils.js'
+import { MONTHS, colorsList, transparentize } from '../services/api/chartUtils.js'
 
 const myChart = ref(null)
 const activeChart = ref(null);

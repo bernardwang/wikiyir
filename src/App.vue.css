@@ -1,0 +1,71 @@
+.wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.input-wrapper {
+  padding: 1rem 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+}
+
+.top-articles {
+  background-color: #e9e7c3;
+  padding: 1rem 0;
+}
+.top-article-heading {
+  text-align: center;
+}
+
+.ribbon {
+  display: flex;
+  overflow-x: scroll;
+  max-width: 100vw;
+  height: 100%;
+  overflow-y: hidden;
+  padding: 2rem 0;
+}
+
+.wiki-input {
+  max-width: 256px;
+}
+
+.map {
+  position: relative;
+  width: 100%;
+  height: 500px;
+}
+
+.map-hidden {
+  visibility: hidden;
+}
+
+.editor-stats {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  background: #f0bc00;
+  padding: 40px 16px;
+}
+.editor-stats > div {
+  display: flex;
+  flex-flow: wrap;
+  justify-content: center;
+  width: 400px;
+}
+.editor-stats dl {
+  width: 150px;
+}
+
+.edit-stats {
+  background: #F9F9F0;
+}
+
+.bytes-stats {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  background: #DCF3EC;
+  padding: 40px 16px;
+}
