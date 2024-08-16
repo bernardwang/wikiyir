@@ -110,10 +110,13 @@ export async function getArticleHistory(article, project, year) {
       const json = await fetch(
         `https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/${project}.org/all-access/all-agents/${title}/daily/${year}${month}01/${year}${month}${lastDate}`
       ).then((r) => r.json())
-      return json.items.map((i) => ({
-        timestamp: i.timestamp,
-        views: i.views
-      }))
+      return json.items.map((i) => {
+        const date = i.timestamp.slice(4, 8)
+        return {
+          timestamp: date.substring(0, 2) + '/' + date.substring(2, 4),
+          views: i.views
+        }
+      })
     })
   )
   return viewsData.flat(1)
