@@ -12,6 +12,7 @@ import ArticleSlide from './components/ArticleSlide.vue'
 import 'vue3-carousel/dist/carousel.css'
 import MostEditedArticles from './components/MostEditedArticles.vue'
 import BytesAdded from './components/BytesAdded.vue'
+import StickyFooter from './components/StickyFooter.vue'
 
 const project = ref('en.wikipedia')
 const year = ref('2024')
@@ -122,118 +123,122 @@ watch(currentArticleHistoryData, (newData) => {
 </script>
 
 <template>
-  <header class="header">
-    <div class="wrapper">
-      <img
-        class="logo"
-        src="https://upload.wikimedia.org/wikipedia/commons/e/ed/WP20Symbols_MediaWiki.svg"
-      />
-      <video class="generated-video" v-if="articleData" width="320" height="240" controls="">
-        <source src="https://moonlit-cannoli-b892ff.netlify.app/final.mp4" type="video/mp4" />
-      </video>
-      <h1>Wikipedia Year in Review</h1>
-    </div>
-  </header>
-
-  <main>
-    <section class="input-wrapper wrapper">
-      <div>
-        <cdx-label input-id="wiki-input"> Year</cdx-label>
-        <cdx-select
-          @update:selected="updateIfNewYearSelected"
-          v-model:selected="year"
-          :menu-items="yearItems"
-          default-label="Choose an option"
-          class="year-select"
-        />
-      </div>
-      <div>
-        <cdx-label input-id="wiki-input"> Wiki:</cdx-label>
-        <cdx-text-input
-          required
-          :disabled="articleData !== null"
-          pattern="[^\.]*\.(wikivoyage|wikinews|wikiversity|wikibooks|wikiquote|wiktionary|wikifunctions|wikisource|wikipedia|mediawiki|wikidata|wikimedia)"
-          type="text"
-          v-model="project"
-          id="wiki-input"
-          class="wiki-input"
-        ></cdx-text-input>
-      </div>
-      <div v-if="false">
-        <cdx-label input-id="filter-input"> Categories </cdx-label>
-        <cdx-select
-          v-model:selected="category"
-          :menu-items="categoryItems"
-          default-label="Filter"
-          id="filter-select"
-        />
-      </div>
-      <div>
-        <cdx-button class="submit-btn" @click="fetchArticles" action="progressive" weight="primary">
-          <cdx-icon class="nextIcon" :icon="cdxIconArrowNext"></cdx-icon>
-          <span>Get Year in Review</span>
-        </cdx-button>
-      </div>
-    </section>
-    <section class="top-articles" v-if="articleData">
+  <div id="app">
+    <header class="header">
       <div class="wrapper">
-        <h2 class="top-article-heading">Most visited articles in {{ year }}</h2>
-        <carousel :items-to-show="1" v-model="currentArticleIndex">
-          <slide v-for="(slide, i) in getSlideData()" :key="i">
-            <article-slide
-              :data="slide"
-              :index="i + 1"
-              :isCurrent="i === currentArticleIndex"
-            ></article-slide>
-          </slide>
-          <template #addons>
-            <navigation />
-            <pagination />
-          </template>
-        </carousel>
+        <img
+          class="logo"
+          src="https://upload.wikimedia.org/wikipedia/commons/e/ed/WP20Symbols_MediaWiki.svg"
+        />
+        <video class="generated-video" v-if="articleData" width="320" height="240" controls="">
+          <source src="https://moonlit-cannoli-b892ff.netlify.app/final.mp4" type="video/mp4" />
+        </video>
+        <h1>Wikipedia Year in Review</h1>
       </div>
-    </section>
-    <section class="timeline-chart wrapper" v-if="currentArticleHistoryData">
-      <div v-if="currentArticleHistoryData === null">Loading chart data...</div>
-      <article-history-chart
-        v-else
-        :dataset="currentArticleHistoryData"
-        :title="currentArticleTitle"
-      ></article-history-chart>
-    </section>
-    <section :class="{ wrapper: true, 'map-hidden': !articleData }">
-      <div id="map" class="map" ref="map"></div>
-    </section>
-    <section v-if="articleData" class="editor-stats wrapper">
-      <div>
-        <dl>
-          <dt>{{ numEditors }}</dt>
-          <dd>editors this year</dd>
-        </dl>
-        <dl>
-          <dt>{{ numNewEditors }}</dt>
-          <dd>new editors</dd>
-        </dl>
-        <dl>
-          <dt>{{ numEdits }}</dt>
-          <dd>edits</dd>
-        </dl>
-        <dl>
-          <dt>{{ bytesAdded }}</dt>
-          <dd>bytes added</dd>
-        </dl>
-      </div>
-      <img src="./assets/community.svg" width="300" />
-    </section>
-    <section v-if="articleData" class="edit-stats wrapper">
-      <div>
-        <MostEditedArticles :data="mostEditedArticles" />
-      </div>
-    </section>
-    <section v-if="articleData" class="bytes-stats wrapper">
-      <BytesAdded :data="bytesAdded" />
-    </section>
-  </main>
+    </header>
+
+    <main>
+      <section class="input-wrapper wrapper">
+        <div>
+          <cdx-label input-id="wiki-input"> Year</cdx-label>
+          <cdx-select
+            @update:selected="updateIfNewYearSelected"
+            v-model:selected="year"
+            :menu-items="yearItems"
+            default-label="Choose an option"
+            class="year-select"
+          />
+        </div>
+        <div>
+          <cdx-label input-id="wiki-input"> Wiki:</cdx-label>
+          <cdx-text-input
+            required
+            :disabled="articleData !== null"
+            pattern="[^\.]*\.(wikivoyage|wikinews|wikiversity|wikibooks|wikiquote|wiktionary|wikifunctions|wikisource|wikipedia|mediawiki|wikidata|wikimedia)"
+            type="text"
+            v-model="project"
+            id="wiki-input"
+            class="wiki-input"
+          ></cdx-text-input>
+        </div>
+        <div v-if="false">
+          <cdx-label input-id="filter-input"> Categories </cdx-label>
+          <cdx-select
+            v-model:selected="category"
+            :menu-items="categoryItems"
+            default-label="Filter"
+            id="filter-select"
+          />
+        </div>
+        <div>
+          <cdx-button class="submit-btn" @click="fetchArticles" action="progressive" weight="primary">
+            <cdx-icon class="nextIcon" :icon="cdxIconArrowNext"></cdx-icon>
+            <span>Get Year in Review</span>
+          </cdx-button>
+        </div>
+      </section>
+      <section class="top-articles" v-if="articleData">
+        <div class="wrapper">
+          <h2 class="top-article-heading">Most visited articles in {{ year }}</h2>
+          <carousel :items-to-show="1" v-model="currentArticleIndex">
+            <slide v-for="(slide, i) in getSlideData()" :key="i">
+              <article-slide
+                :data="slide"
+                :index="i + 1"
+                :isCurrent="i === currentArticleIndex"
+              ></article-slide>
+            </slide>
+            <template #addons>
+              <navigation />
+              <pagination />
+            </template>
+          </carousel>
+        </div>
+      </section>
+      <section class="timeline-chart wrapper" v-if="currentArticleHistoryData">
+        <div v-if="currentArticleHistoryData === null">Loading chart data...</div>
+        <article-history-chart
+          v-else
+          :dataset="currentArticleHistoryData"
+          :title="currentArticleTitle"
+        ></article-history-chart>
+      </section>
+      <section :class="{ wrapper: true, 'map-hidden': !articleData }">
+        <div id="map" class="map" ref="map"></div>
+      </section>
+      <section v-if="articleData" class="editor-stats wrapper">
+        <div>
+          <dl>
+            <dt>{{ numEditors }}</dt>
+            <dd>editors this year</dd>
+          </dl>
+          <dl>
+            <dt>{{ numNewEditors }}</dt>
+            <dd>new editors</dd>
+          </dl>
+          <dl>
+            <dt>{{ numEdits }}</dt>
+            <dd>edits</dd>
+          </dl>
+          <dl>
+            <dt>{{ bytesAdded }}</dt>
+            <dd>bytes added</dd>
+          </dl>
+        </div>
+        <img src="./assets/community.svg" width="300" />
+      </section>
+      <section v-if="articleData" class="edit-stats wrapper">
+        <div>
+          <MostEditedArticles :data="mostEditedArticles" />
+        </div>
+      </section>
+      <section v-if="articleData" class="bytes-stats wrapper">
+        <BytesAdded :data="bytesAdded" />
+      </section>
+    </main>
+
+    <StickyFooter />
+  </div>
 </template>
 
 <style scoped>
@@ -328,5 +333,24 @@ header {
   justify-content: center;
   background: #DCF3EC;
   padding: 40px 16px;
+}
+</style>
+
+<style>
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure main content takes up available space */
+.main-content {
+  flex: 1 0 auto;
+}
+
+/* You may need to adjust other global styles */
+body {
+  margin: 0;
+  padding: 0;
 }
 </style>
