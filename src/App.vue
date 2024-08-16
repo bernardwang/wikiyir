@@ -14,6 +14,7 @@ import MostEditedArticles from './components/MostEditedArticles.vue'
 import BytesAdded from './components/BytesAdded.vue'
 import StickyFooter from './components/StickyFooter.vue'
 import DonateToday from './components/DonateToday.vue'
+import Header from './components/Header.vue'
 
 const project = ref('en.wikipedia')
 const year = ref('2024')
@@ -125,19 +126,7 @@ watch(currentArticleHistoryData, (newData) => {
 
 <template>
   <div id="app">
-    <header class="header">
-      <div class="wrapper">
-        <img
-          class="logo"
-          src="https://upload.wikimedia.org/wikipedia/commons/e/ed/WP20Symbols_MediaWiki.svg"
-        />
-        <video class="generated-video" v-if="articleData" width="320" height="240" controls="">
-          <source src="https://moonlit-cannoli-b892ff.netlify.app/final.mp4" type="video/mp4" />
-        </video>
-        <h1>Wikipedia Year in Review</h1>
-      </div>
-    </header>
-
+    <Header :hasArticleData="!!articleData" />
     <main class="main-content">
       <section class="input-wrapper wrapper">
         <div>
@@ -246,30 +235,9 @@ watch(currentArticleHistoryData, (newData) => {
 </template>
 
 <style scoped>
-header {
-  width: 100%;
-  background-color: #e679a6;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem 0;
-  position: relative;
-}
-
 .wrapper {
   max-width: 800px;
   margin: 0 auto;
-}
-
-.logo {
-  width: 300px;
-}
-
-.generated-video {
-  position: absolute;
-  left: calc(50% - 160px);
-  top: 25px;
-  bottom: 0;
 }
 
 .input-wrapper {
