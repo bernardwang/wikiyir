@@ -14,6 +14,7 @@ import MostEditedArticles from './components/MostEditedArticles.vue'
 import BytesAdded from './components/BytesAdded.vue'
 import StickyFooter from './components/StickyFooter.vue'
 import DonateToday from './components/DonateToday.vue'
+import Header from './components/Header.vue'
 
 const project = ref('en.wikipedia')
 const year = ref('2024')
@@ -125,19 +126,7 @@ watch(currentArticleHistoryData, (newData) => {
 
 <template>
   <div id="app">
-    <header class="header">
-      <div class="wrapper">
-        <img
-          class="logo"
-          src="https://upload.wikimedia.org/wikipedia/commons/e/ed/WP20Symbols_MediaWiki.svg"
-        />
-        <video class="generated-video" v-if="articleData" width="320" height="240" controls="">
-          <source src="https://moonlit-cannoli-b892ff.netlify.app/final.mp4" type="video/mp4" />
-        </video>
-        <h1>Wikipedia Year in Review</h1>
-      </div>
-    </header>
-
+    <Header :hasArticleData="!!articleData" />
     <main class="main-content">
       <section class="input-wrapper wrapper">
         <div>
@@ -246,68 +235,12 @@ watch(currentArticleHistoryData, (newData) => {
 </template>
 
 <style scoped>
-.splash-container {
-  width: 100%;
-  background: #0d65c0;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem 0;
-  position: relative;
-}
-
-.splash {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-}
-
-.splash-text {
-  max-width: 300px;
-}
-
-.knowledge {
-  background: #c0e6ff;
-  color: black;
-}
-
-.bytes {
-  background: #dcf3ec;
-  color: black;
-}
-
-.heart {
-  background: #e5c0c0;
-  color: black;
-}
-
 .wrapper {
-  max-width: 650px;
+  max-width: 800px;
   margin: 0 auto;
-  width: 100%;
 }
 
-.svg {
-  width: 300px;
-}
-
-.invert {
-  filter: invert(1);
-}
-
-.carousel {
-  margin-top: 1rem;
-}
-.generated-video {
-  position: absolute;
-  left: calc(50% - 160px);
-  top: 25px;
-  bottom: 0;
-}
-
-.input-container {
-  background-color: #e9e7c3;
+.input-wrapper {
   padding: 1rem 0;
 }
 
