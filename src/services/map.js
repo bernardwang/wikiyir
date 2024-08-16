@@ -1,6 +1,6 @@
 let currentMap;
 const IGNORE_LIST = [ 'Main_Page' ];
-import alpha from "./alpha2Lookup.json";
+import alpha from "../alpha2Lookup.json";
 
 const queries = {};
 

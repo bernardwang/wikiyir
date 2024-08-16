@@ -1,20 +1,20 @@
 <script setup>
-import initMap from './map'
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import { CdxLabel, CdxTextInput, CdxButton, CdxIcon, CdxSelect } from '@wikimedia/codex'
 import { cdxIconArrowNext, cdxIconHeart } from '@wikimedia/codex-icons'
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
-import fetchData from './services/api/fetchData.js'
-import { TopArticlesAPI } from './services/api'
-import TopArticlesChart from './components/TopArticlesChart.vue'
-import ArticleHistoryChart from './components/ArticleHistoryChart.vue'
-import ArticleSlide from './components/ArticleSlide.vue'
 import 'vue3-carousel/dist/carousel.css'
-import MostEditedArticles from './components/MostEditedArticles.vue'
-import BytesAdded from './components/BytesAdded.vue'
-import StickyFooter from './components/StickyFooter.vue'
-import DonateToday from './components/DonateToday.vue'
-import Header from './components/Header.vue'
+
+import { initMap, fetchData, TopArticlesAPI } from '@/services'
+import {
+  Header,
+  ArticleSlide,
+  ArticleHistoryChart,
+  MostEditedArticles,
+  BytesAdded,
+  DonateToday,
+  StickyFooter
+} from '@/components'
 
 const project = ref('en.wikipedia')
 const year = ref('2024')
@@ -234,90 +234,7 @@ watch(currentArticleHistoryData, (newData) => {
   </div>
 </template>
 
-<style scoped>
-.wrapper {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.input-wrapper {
-  padding: 1rem 0;
-}
-
-.input {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-}
-
-.top-articles {
-  padding: 1rem 0;
-}
-
-.timeline-chart {
-  padding: 1rem 0;
-}
-
-.ribbon {
-  display: flex;
-  overflow-x: scroll;
-  max-width: 100vw;
-  height: 100%;
-  overflow-y: hidden;
-  padding: 2rem 0;
-}
-
-.wiki-input {
-  max-width: 200px;
-}
-
-.year-input {
-  max-width: 200px;
-}
-
-.map {
-  position: relative;
-  width: 100%;
-}
-
-.map-hidden {
-  visibility: hidden;
-}
-
-.editors {
-  background: #f9f9f0;
-}
-
-.editor-stats-container {
-  display: flex;
-  gap: 50px;
-  justify-content: center;
-  background: #fbeebf;
-  padding: 20px 16px;
-}
-
-.editor-stats-container > div {
-  justify-content: center;
-  width: 400px;
-}
-
-.editor-stats dl {
-  width: 150px;
-}
-
-.edit-stats {
-  background: #F9F9F0;
-}
-
-.bytes-stats {
-  display: flex;
-  gap: 50px;
-  justify-content: center;
-  background: #DCF3EC;
-  padding: 40px 16px;
-}
-
-</style>
+<style lang="css" src="@/App.vue.css"></style>
 
 <style>
 #app {
