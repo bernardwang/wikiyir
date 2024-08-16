@@ -1,17 +1,17 @@
 <script setup>
 import initMap from './map'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { CdxLabel, CdxTextInput, CdxButton, CdxIcon, CdxSelect } from '@wikimedia/codex'
 import { cdxIconArrowNext, cdxIconHeart } from '@wikimedia/codex-icons'
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
-import fetchData from './fetchData.js'
-import { getArticleHistory } from './topArticles.js'
+import fetchData from './services/api/fetchData.js'
+import { TopArticlesAPI } from './services/api'
 import TopArticlesChart from './components/TopArticlesChart.vue'
 import ArticleHistoryChart from './components/ArticleHistoryChart.vue'
 import ArticleSlide from './components/ArticleSlide.vue'
 import 'vue3-carousel/dist/carousel.css'
 import MostEditedArticles from './components/MostEditedArticles.vue'
-import { Suspense } from 'vue'
+import BytesAdded from './components/BytesAdded.vue'
 
 const project = ref('en.wikipedia')
 const year = ref('2024')
@@ -26,7 +26,7 @@ const numNewEditors = ref(0)
 const numEditors = ref(0)
 const numEdits = ref(0)
 
-const mostEditedArticles =  ref(null)
+const mostEditedArticles = ref([])
 
 const yearItems = [
   { label: '2024', value: '2024' },
@@ -52,6 +52,8 @@ const updateFromData = (data) => {
   numEdits.value = toReadable(data.numEdits)
   numEditors.value = toReadable(data.numEditors)
   numNewEditors.value = toReadable(data.numNewEditors)
+  mostEditedArticles.value = data.mostEditedArticles || []
+  console.log('Updated mostEditedArticles:', mostEditedArticles.value)
 }
 
 async function fetchArticles() {
@@ -59,7 +61,6 @@ async function fetchArticles() {
   updateFromData(data)
   articleData.value = data
   window.articleData = articleData.value
-  await getMostEditedArticles()
 }
 
 /**
@@ -82,21 +83,19 @@ const getSlideData = ref(() => {
 })
 
 async function getArticleHistoryData(currentArticleIndex) {
-  const currentArticle = articleData.value.yearlyTopArticles[currentArticleIndex]
-  currentArticleHistoryData.value = await getArticleHistory(
-    currentArticle,
-    project.value,
-    year.value
-  )
-  currentArticleTitle.value = currentArticle.article.replace(/_/g, ' ')
-}
-
-async function getMostEditedArticles() {
-  if (articleData.value && articleData.value.mostEditedArticles) {
-    mostEditedArticles.value = articleData.value.mostEditedArticles
-  } else {
-    const data = await fetchData({ project: project.value, limit: 10, year: year.value })
-    mostEditedArticles.value = data.mostEditedArticles
+  try {
+    const currentArticle = articleData.value.yearlyTopArticles[currentArticleIndex]
+    currentArticleHistoryData.value = await TopArticlesAPI.getArticleHistory(
+      currentArticle,
+      project.value,
+      year.value
+    )
+    currentArticleTitle.value = currentArticle.article.replace(/_/g, ' ')
+    console.log('Article history data:', currentArticleHistoryData.value)
+  } catch (error) {
+    console.error('Error fetching article history data:', error)
+    currentArticleHistoryData.value = null
+    currentArticleTitle.value = ''
   }
 }
 
@@ -117,7 +116,9 @@ watch(articleData, async () => {
   initMap(project.value, year.value)
 })
 
-
+watch(currentArticleHistoryData, (newData) => {
+  console.log('Current article history data updated:', newData)
+})
 </script>
 
 <template>
@@ -205,14 +206,10 @@ watch(articleData, async () => {
         </carousel>
       </div>
     </section>
-    <section class="timeline-chart wrapper" v-if="articleData && false">
-      <top-articles-chart
-        :numberMonths="articleData.monthlyTopArticles.length"
-        :dataset="articleData.yearlyTopArticles"
-      ></top-articles-chart>
-    </section>
     <section class="timeline-chart wrapper" v-if="currentArticleHistoryData">
+      <div v-if="currentArticleHistoryData === null">Loading chart data...</div>
       <article-history-chart
+        v-else
         :dataset="currentArticleHistoryData"
         :title="currentArticleTitle"
       ></article-history-chart>
@@ -299,18 +296,13 @@ watch(articleData, async () => {
         <img class="svg" src="./assets/puzzleglobe.svg" />
       </div>
     </section>
-    <section v-if="mostEditedArticles && mostEditedArticles.length > 0" class="edit-stats wrapper">
+    <section v-if="articleData" class="edit-stats wrapper">
       <div>
-        <h2>Most Edited Articles</h2>
-        <Suspense>
-          <template #default>
-            <MostEditedArticles :data="mostEditedArticles" />
-          </template>
-          <template #fallback>
-            <p>Loading most edited articles...</p>
-          </template>
-        </Suspense>
+        <MostEditedArticles :data="mostEditedArticles" />
       </div>
+    </section>
+    <section v-if="articleData" class="bytes-stats wrapper">
+      <BytesAdded :data="bytesAdded" />
     </section>
   </main>
 </template>
@@ -440,5 +432,17 @@ watch(articleData, async () => {
 
 .editor-stats dl {
   width: 150px;
+}
+
+.edit-stats {
+  background: #F9F9F0;
+}
+
+.bytes-stats {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  background: #DCF3EC;
+  padding: 40px 16px;
 }
 </style>

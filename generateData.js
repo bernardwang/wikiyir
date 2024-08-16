@@ -1,5 +1,5 @@
 import { getTopArticles } from "./src/topArticles.js";
-import { getEditorActivity } from "./src/editorActivity.js";
+import { getEditorActivity } from "./src/services/api/editorActivity.js";
 import fs from 'fs';
 
 const sleep = ( seconds ) => new Promise( ( resolve ) => {
