@@ -12,6 +12,7 @@ import ArticleSlide from './components/ArticleSlide.vue'
 import 'vue3-carousel/dist/carousel.css'
 import MostEditedArticles from './components/MostEditedArticles.vue'
 import BytesAdded from './components/BytesAdded.vue'
+import StickyFooter from './components/StickyFooter.vue'
 
 const project = ref('en.wikipedia')
 const year = ref('2024')
@@ -122,27 +123,22 @@ watch(currentArticleHistoryData, (newData) => {
 </script>
 
 <template>
-  <section class="splash-container">
-    <div class="splash wrapper">
-      <div class="splash-text">
+  <div id="app">
+    <header class="header">
+      <div class="wrapper">
+        <img
+          class="logo"
+          src="https://upload.wikimedia.org/wikipedia/commons/e/ed/WP20Symbols_MediaWiki.svg"
+        />
+        <video class="generated-video" v-if="articleData" width="320" height="240" controls="">
+          <source src="https://moonlit-cannoli-b892ff.netlify.app/final.mp4" type="video/mp4" />
+        </video>
         <h1>Wikipedia Year in Review</h1>
-        <p>
-          Wikipedia is the world’s essential and reliable resource dedicated to recording and
-          preserving the world’s knowledge, ensuring that everyone has access to our shared history.
-          Without this collective effort, much of what shapes our world today would be lost, and
-          future generations would miss out on understanding our collective journey.
-        </p>
       </div>
-      <img class="svg invert" src="./assets/brain.svg" />
-      <video class="generated-video" v-if="false" width="320" height="240" controls="">
-        <source src="https://moonlit-cannoli-b892ff.netlify.app/final.mp4" type="video/mp4" />
-      </video>
-    </div>
-  </section>
+    </header>
 
-  <main>
-    <section class="input-container">
-      <div class="input wrapper">
+    <main>
+      <section class="input-wrapper wrapper">
         <div>
           <cdx-label input-id="wiki-input"> Year</cdx-label>
           <cdx-select
@@ -175,136 +171,74 @@ watch(currentArticleHistoryData, (newData) => {
           />
         </div>
         <div>
-          <cdx-button
-            class="submit-btn"
-            @click="fetchArticles"
-            action="progressive"
-            weight="primary"
-          >
+          <cdx-button class="submit-btn" @click="fetchArticles" action="progressive" weight="primary">
             <cdx-icon class="nextIcon" :icon="cdxIconArrowNext"></cdx-icon>
             <span>Get Year in Review</span>
           </cdx-button>
         </div>
-      </div>
-    </section>
-    <section class="top-articles" v-if="articleData">
-      <div class="wrapper">
-        <h2>Most visited articles in {{ year }}</h2>
-        <hr />
-        <carousel class="carousel" :items-to-show="1" v-model="currentArticleIndex">
-          <slide v-for="(slide, i) in getSlideData()" :key="i">
-            <article-slide
-              :data="slide"
-              :index="i + 1"
-              :isCurrent="i === currentArticleIndex"
-            ></article-slide>
-          </slide>
-          <template #addons>
-            <navigation />
-            <pagination />
-          </template>
-        </carousel>
-      </div>
-    </section>
-    <section class="timeline-chart wrapper" v-if="currentArticleHistoryData">
-      <div v-if="currentArticleHistoryData === null">Loading chart data...</div>
-      <article-history-chart
-        v-else
-        :dataset="currentArticleHistoryData"
-        :title="currentArticleTitle"
-      ></article-history-chart>
-    </section>
-    <section v-if="articleData" class="editor-stats-container">
-      <div class="editor-stats wrapper">
-        <dl>
-          <dt>{{ numEditors }}</dt>
-          <dd>editors this year</dd>
-        </dl>
-        <dl>
-          <dt>{{ numNewEditors }}</dt>
-          <dd>new editors</dd>
-        </dl>
-        <dl>
-          <dt>{{ numEdits }}</dt>
-          <dd>edits</dd>
-        </dl>
-        <dl>
-          <dt>{{ bytesAdded }}</dt>
-          <dd>bytes added</dd>
-        </dl>
-      </div>
-    </section>
-    <section :class="{ wrapper: true, 'map-hidden': !articleData }">
-      <h2>Most visited articles worldwide</h2>
-      <hr />
-      <div id="map" class="map" ref="map"></div>
-    </section>
-    <section class="splash-container knowledge">
-      <div class="splash wrapper">
-        <div class="splash-text">
-          <h2>Knowledge is human.</h2>
-          <p>
-            This vast repository of knowledge is only made possible through the work of volunteer
-            editors, who dedicate untold numbers of hours to writing articles, fixing mistakes,
-            uploading images, and making the wikis better for everyone on the planet. These
-            Wikipedians are the beating heart of the project, deeply committed to the accuracy and
-            accessibility of information.
-          </p>
+      </section>
+      <section class="top-articles" v-if="articleData">
+        <div class="wrapper">
+          <h2 class="top-article-heading">Most visited articles in {{ year }}</h2>
+          <carousel :items-to-show="1" v-model="currentArticleIndex">
+            <slide v-for="(slide, i) in getSlideData()" :key="i">
+              <article-slide
+                :data="slide"
+                :index="i + 1"
+                :isCurrent="i === currentArticleIndex"
+              ></article-slide>
+            </slide>
+            <template #addons>
+              <navigation />
+              <pagination />
+            </template>
+          </carousel>
         </div>
-        <img class="svg" src="./assets/community.svg" />
-      </div>
-    </section>
-    <section class="splash-container editors">
-      <div class="splash wrapper">
-        <h2>Most edited articles</h2>
-        <hr />
-        <div></div>
-      </div>
-    </section>
-    <section class="splash-container bytes">
-      <div class="splash wrapper">
-        <img class="svg" src="./assets/bytes.png" />
-        <div class="splash-text">
-          <h2>{{ bytesAdded }} bytes added</h2>
-          <p>
-            This vast repository of knowledge is only made possible through the work of volunteer
-            editors, who dedicate untold numbers of hours to writing articles, fixing mistakes,
-            uploading images, and making the wikis better for everyone on the planet. These
-            Wikipedians are the beating heart of the project, deeply committed to the accuracy and
-            accessibility of information.
-          </p>
+      </section>
+      <section class="timeline-chart wrapper" v-if="currentArticleHistoryData">
+        <div v-if="currentArticleHistoryData === null">Loading chart data...</div>
+        <article-history-chart
+          v-else
+          :dataset="currentArticleHistoryData"
+          :title="currentArticleTitle"
+        ></article-history-chart>
+      </section>
+      <section :class="{ wrapper: true, 'map-hidden': !articleData }">
+        <div id="map" class="map" ref="map"></div>
+      </section>
+      <section v-if="articleData" class="editor-stats wrapper">
+        <div>
+          <dl>
+            <dt>{{ numEditors }}</dt>
+            <dd>editors this year</dd>
+          </dl>
+          <dl>
+            <dt>{{ numNewEditors }}</dt>
+            <dd>new editors</dd>
+          </dl>
+          <dl>
+            <dt>{{ numEdits }}</dt>
+            <dd>edits</dd>
+          </dl>
+          <dl>
+            <dt>{{ bytesAdded }}</dt>
+            <dd>bytes added</dd>
+          </dl>
         </div>
-      </div>
-    </section>
-    <section class="splash-container heart">
-      <div class="splash wrapper">
-        <div class="splash-text">
-          <h2>Donate today</h2>
-          <p>
-            Wikipedia relies on the support of people like you to keep free knowledge accessible to
-            everyone. As an encyclopedia written entirely by volunteers, Wikipedia is crucial for
-            preserving and sharing humanity's collective knowledge. Without it, our ability to leave
-            an unbiased record of our collective history would be severely compromised. By donating,
-            you help ensure that Wikipedia remains a vital resource for the world, keeping the
-            world’s knowledge available to all, and expanding it for future generations.  
-          </p>
-          <cdx-button class="donate-btn" action="progressive" weight="primary">
-            <cdx-icon class="heartIcon" :icon="cdxIconHeart"></cdx-icon>
-            <span>Donate</span>
-          </cdx-button>
+        <img src="./assets/community.svg" width="300" />
+      </section>
+      <section v-if="articleData" class="edit-stats wrapper">
+        <div>
+          <MostEditedArticles :data="mostEditedArticles" />
         </div>
-        <img class="svg" src="./assets/puzzleglobe.svg" />
-      </div>
-    </section>
-    <section v-if="articleData" class="edit-stats wrapper">
-      <div>
-        <MostEditedArticles :data="mostEditedArticles" />
-      </div>
-    </section>
-    <section v-if="articleData" class="bytes-stats wrapper">
-      <BytesAdded :data="bytesAdded" />
-    </section>
-  </main>
+      </section>
+      <section v-if="articleData" class="bytes-stats wrapper">
+        <BytesAdded :data="bytesAdded" />
+      </section>
+    </main>
+
+    <StickyFooter />
+  </div>
 </template>
 
 <style scoped>
@@ -444,5 +378,24 @@ watch(currentArticleHistoryData, (newData) => {
   justify-content: center;
   background: #DCF3EC;
   padding: 40px 16px;
+}
+</style>
+
+<style>
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure main content takes up available space */
+.main-content {
+  flex: 1 0 auto;
+}
+
+/* You may need to adjust other global styles */
+body {
+  margin: 0;
+  padding: 0;
 }
 </style>
